@@ -24,3 +24,4 @@ yarn-error.log*
 
 # chrome debugger vscode
 .vscode
+tsconfig.json
