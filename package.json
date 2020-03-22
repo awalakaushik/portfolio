@@ -16,6 +16,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
+    "react-styleguidist": "^11.0.4",
     "typescript": "^3.8.3"
   },
   "lint-staged": {
@@ -24,6 +25,8 @@
     ]
   },
   "scripts": {
+    "styleguide": "styleguidist server",
+    "styleguide:build": "styleguidist build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
