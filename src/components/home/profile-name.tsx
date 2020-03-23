@@ -6,7 +6,7 @@ export default class ProfileName extends React.Component {
         return (
             <React.Fragment>
                 <span className="profile-name">I'm Kaushik</span>
-                <span className="profile-description">a software developer</span>
+                <span className="profile-description">a full-stack web developer</span>
             </React.Fragment>
         )
     }
