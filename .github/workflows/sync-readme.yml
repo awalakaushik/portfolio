@@ -1,0 +1,43 @@
+name: Sync GitHub Profile README
+
+on:
+  push:
+    paths:
+      - 'src/data/bio.json'
+    branches:
+      - main
+
+jobs:
+  sync-readme:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout portfolio repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Generate README
+        run: node scripts/generate-readme.mjs --out /tmp/README.md
+
+      - name: Checkout profile repo
+        uses: actions/checkout@v4
+        with:
+          repository: awalakaushik/awalakaushik
+          token: ${{ secrets.PROFILE_README_TOKEN }}
+          path: profile-repo
+
+      - name: Update profile README
+        run: |
+          cp /tmp/README.md profile-repo/README.md
+          cd profile-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git diff --cached --quiet || git commit -m "chore: sync README from portfolio bio"
+          git push

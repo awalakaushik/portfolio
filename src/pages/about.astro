@@ -1,0 +1,118 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FadeIn from '../components/FadeIn.tsx';
+import SectionHeading from '../components/SectionHeading.astro';
+import TimelineItem from '../components/TimelineItem.tsx';
+import { getCollection } from 'astro:content';
+
+const experience = await getCollection('experience');
+const sortedExperience = experience.sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout title="About — Kaushik Reddy Awala" description="Learn about Kaushik Reddy Awala's background, skills, and professional experience as a Software Engineer.">
+  <!-- Spacer for fixed navbar -->
+  <div class="h-16" />
+
+  <!-- ===== BIO SECTION ===== -->
+  <section class="section-padding">
+    <div class="max-w-6xl mx-auto">
+      <FadeIn client:visible>
+        <SectionHeading title="About Me" />
+      </FadeIn>
+
+      <div class="grid md:grid-cols-5 gap-12 items-start">
+        <!-- Bio Text -->
+        <div class="md:col-span-3 space-y-6">
+          <FadeIn client:visible delay={0.1}>
+            <p class="text-lg text-surface-600 dark:text-surface-400 leading-relaxed">
+              I'm a full-stack web developer focused on responsive and accessible design. Based in Houston, Texas,
+              I'm passionate about efficiency, optimization, and working in a culture of "Purpose" to change the world.
+              My journey spans 8+ years across companies like SLB, Olive, Microsoft, and HungerRush.
+            </p>
+          </FadeIn>
+          <FadeIn client:visible delay={0.2}>
+            <p class="text-lg text-surface-600 dark:text-surface-400 leading-relaxed">
+              I specialize in frontend frameworks like Angular, Vue.js, and React, paired with .NET Core backends
+              and cloud infrastructure on Azure and AWS. I believe great software comes from clean architecture,
+              thoughtful UX, and relentless attention to detail.
+            </p>
+          </FadeIn>
+          <FadeIn client:visible delay={0.3}>
+            <p class="text-lg text-surface-600 dark:text-surface-400 leading-relaxed">
+              Beyond coding, I'm fascinated by quantum computing and blockchain technology. I'm a regional table tennis
+              tournament winner, an aspiring poet working on a book, and an experimental cook. Currently diving into
+              advanced React patterns, ML.NET, and Quantum Computing Fundamentals with Q#.
+            </p>
+          </FadeIn>
+        </div>
+
+        <!-- Info Card -->
+        <div class="md:col-span-2">
+          <FadeIn client:visible delay={0.2} direction="right">
+            <div class="glass-card p-8 space-y-6">
+              <h3 class="text-sm font-semibold text-surface-400 dark:text-surface-500 uppercase tracking-wider">
+                Quick Info
+              </h3>
+              <div class="space-y-4">
+                <div>
+                  <p class="text-xs text-surface-400 dark:text-surface-500 uppercase tracking-wider">Location</p>
+                  <p class="text-sm font-medium text-surface-900 dark:text-white mt-1">Houston, Texas</p>
+                </div>
+                <div>
+                  <p class="text-xs text-surface-400 dark:text-surface-500 uppercase tracking-wider">Focus</p>
+                  <p class="text-sm font-medium text-surface-900 dark:text-white mt-1">Full-Stack Web Development</p>
+                </div>
+                <div>
+                  <p class="text-xs text-surface-400 dark:text-surface-500 uppercase tracking-wider">Interests</p>
+                  <p class="text-sm font-medium text-surface-900 dark:text-white mt-1">Quantum Computing, Blockchain, Poetry</p>
+                </div>
+                <div>
+                  <p class="text-xs text-surface-400 dark:text-surface-500 uppercase tracking-wider">Certifications</p>
+                  <p class="text-sm font-medium text-surface-900 dark:text-white mt-1">MCP, Azure Fundamentals</p>
+                </div>
+              </div>
+
+              <div class="pt-4 border-t border-surface-200/50 dark:border-surface-700/50">
+                <a
+                  href="/contact"
+                  class="inline-flex items-center gap-2 text-primary-600 dark:text-primary-400 font-medium text-sm hover:gap-3 transition-all"
+                >
+                  Request my resume
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width={2}>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </FadeIn>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== EXPERIENCE TIMELINE ===== -->
+  <section class="section-padding bg-surface-50/50 dark:bg-surface-900/20">
+    <div class="max-w-4xl mx-auto">
+      <FadeIn client:visible>
+        <SectionHeading
+          title="Experience"
+          subtitle="My professional journey so far."
+        />
+      </FadeIn>
+
+      <div class="mt-8">
+        {sortedExperience.map((exp, i) => (
+          <TimelineItem
+            client:visible
+            company={exp.data.company}
+            role={exp.data.role}
+            startDate={exp.data.startDate}
+            endDate={exp.data.endDate}
+            description={exp.data.description}
+            index={i}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

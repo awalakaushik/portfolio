@@ -1,0 +1,103 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FadeIn from '../components/FadeIn.tsx';
+import ProjectCard from '../components/ProjectCard.tsx';
+import SectionHeading from '../components/SectionHeading.astro';
+import { getCollection } from 'astro:content';
+
+const allProjects = await getCollection('projects');
+const sortedProjects = allProjects.sort((a, b) => a.data.order - b.data.order);
+
+// Collect all unique tags
+const allTags = [...new Set(sortedProjects.flatMap((p) => p.data.tags))].sort();
+---
+
+<BaseLayout title="Projects — Kaushik Reddy Awala" description="Explore my portfolio of web development projects.">
+  <!-- Spacer for fixed navbar -->
+  <div class="h-16" />
+
+  <section class="section-padding">
+    <div class="max-w-6xl mx-auto">
+      <FadeIn client:visible>
+        <SectionHeading
+          title="Projects"
+          subtitle="Everything I've built — from side projects to production applications."
+        />
+      </FadeIn>
+
+      <!-- Filter Tags -->
+      <FadeIn client:visible delay={0.1}>
+        <div class="flex flex-wrap items-center gap-2 mb-10" id="project-filters">
+          <button
+            class="filter-btn active px-4 py-2 rounded-xl text-sm font-medium border border-surface-200 dark:border-surface-700 bg-primary-600 text-white transition-all"
+            data-filter="all"
+          >
+            All
+          </button>
+          {allTags.map((tag) => (
+            <button
+              class="filter-btn px-4 py-2 rounded-xl text-sm font-medium border border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-400 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-all"
+              data-filter={tag}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+      </FadeIn>
+
+      <!-- Project Grid -->
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="project-grid">
+        {sortedProjects.map((project, i) => (
+          <div data-tags={JSON.stringify(project.data.tags)} class="project-card">
+            <FadeIn client:visible delay={i * 0.1}>
+              <ProjectCard
+                client:visible
+                title={project.data.title}
+                description={project.data.description}
+                tags={project.data.tags}
+                image={project.data.image}
+                liveUrl={project.data.liveUrl}
+                githubUrl={project.data.githubUrl}
+                slug={project.id}
+                achievements={project.data.achievements}
+                company={project.data.company}
+              />
+            </FadeIn>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Client-side filter script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const btns = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+      const cards = document.querySelectorAll<HTMLElement>('.project-card');
+
+      btns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const filter = btn.dataset.filter;
+
+          // Toggle active state
+          btns.forEach((b) => {
+            b.classList.remove('bg-primary-600', 'text-white', 'active');
+            b.classList.add('text-surface-600', 'dark:text-surface-400');
+          });
+          btn.classList.add('bg-primary-600', 'text-white', 'active');
+          btn.classList.remove('text-surface-600', 'dark:text-surface-400');
+
+          // Filter cards
+          cards.forEach((card) => {
+            const tags: string[] = JSON.parse(card.dataset.tags || '[]');
+            if (filter === 'all' || tags.includes(filter!)) {
+              card.style.display = '';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      });
+    });
+  </script>
+</BaseLayout>

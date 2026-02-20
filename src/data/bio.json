@@ -1,0 +1,60 @@
+{
+    "name": "Kaushik Reddy Awala",
+    "greeting": "Hi there, I'm Awala, Kaushik Reddy! 👋",
+    "title": "Software Engineer",
+    "location": "Houston, TX",
+    "email": "reach@awalakaushik.dev",
+    "website": "https://awalakaushik.dev",
+    "bio": [
+        "I'm a full-stack web developer focused on responsive and accessible design. Passionate about efficiency, optimization, and working in a culture of \"Purpose\" to change the world.",
+        "I specialize in frontend frameworks like Angular, Vue.js, and React, paired with .NET Core backends and cloud infrastructure on Azure and AWS.",
+        "Beyond coding, I'm fascinated by quantum computing and blockchain technology. I'm a regional table tennis tournament winner, an aspiring poet working on a book, and an experimental cook."
+    ],
+    "currentlyLearning": [
+        "Advanced React Patterns",
+        "ML.NET",
+        "Quantum Computing Fundamentals with Q#"
+    ],
+    "interests": [
+        "Quantum Computing",
+        "Blockchain",
+        "Table Tennis",
+        "Poetry",
+        "Cooking"
+    ],
+    "certifications": [
+        "Microsoft Certified Professional (MCP)",
+        "Azure Fundamentals"
+    ],
+    "social": {
+        "github": "awalakaushik",
+        "linkedin": "akaushikr",
+        "twitter": "akaushikr"
+    },
+    "techStack": {
+        "Frontend": [
+            "Angular",
+            "React",
+            "Vue.js"
+        ],
+        "Language": [
+            "TypeScript",
+            "JavaScript",
+            "C#"
+        ],
+        "Backend": [
+            ".NET Core"
+        ],
+        "Cloud": [
+            "Azure",
+            "AWS"
+        ],
+        "DevOps": [
+            "Docker",
+            "Kubernetes"
+        ],
+        "Database": [
+            "SQL Server"
+        ]
+    }
+}

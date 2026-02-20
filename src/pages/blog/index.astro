@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FadeIn from '../../components/FadeIn.tsx';
+import SectionHeading from '../../components/SectionHeading.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blogs');
+const posts = allPosts
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+---
+
+<BaseLayout title="Blog — Kaushik Reddy Awala" description="Thoughts on web development, technology, and software engineering.">
+  <!-- Spacer for fixed navbar -->
+  <div class="h-16" />
+
+  <section class="section-padding">
+    <div class="max-w-4xl mx-auto">
+      <FadeIn client:visible>
+        <SectionHeading
+          title="Blog"
+          subtitle="Thoughts, tutorials, and insights on modern web development."
+        />
+      </FadeIn>
+
+      <div class="space-y-6">
+        {posts.map((post, i) => (
+          <FadeIn client:visible delay={i * 0.1}>
+            <a
+              href={`/blog/${post.id}`}
+              class="group block glass-card p-6 md:p-8 hover:border-primary-500/30 dark:hover:border-primary-500/30 transition-all"
+            >
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-3">
+                <h2 class="text-xl font-semibold text-surface-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                  {post.data.title}
+                </h2>
+                <time class="text-xs font-mono text-surface-400 dark:text-surface-500 shrink-0">
+                  {formatDate(post.data.pubDate)}
+                </time>
+              </div>
+              <p class="text-sm text-surface-500 dark:text-surface-400 leading-relaxed line-clamp-2">
+                {post.data.description}
+              </p>
+              {post.data.tags.length > 0 && (
+                <div class="flex flex-wrap gap-2 mt-4">
+                  {post.data.tags.map((tag) => (
+                    <span class="inline-block rounded-full bg-primary-50 dark:bg-primary-500/10 px-3 py-1 text-xs font-medium text-primary-600 dark:text-primary-400">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </a>
+          </FadeIn>
+        ))}
+      </div>
+
+      {posts.length === 0 && (
+        <div class="text-center py-20">
+          <p class="text-surface-500 dark:text-surface-400">No posts yet. Check back soon!</p>
+        </div>
+      )}
+    </div>
+  </section>
+</BaseLayout>

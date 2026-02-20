@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FadeIn from '../../components/FadeIn.tsx';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blogs');
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+---
+
+<BaseLayout title={`${post.data.title} — Kaushik Reddy Awala`} description={post.data.description}>
+  <!-- Spacer for fixed navbar -->
+  <div class="h-16" />
+
+  <article class="section-padding">
+    <div class="max-w-3xl mx-auto">
+      <FadeIn client:visible>
+        <!-- Back link -->
+        <a
+          href="/blog"
+          class="inline-flex items-center gap-2 text-sm text-surface-500 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors mb-8"
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width={2}>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
+          </svg>
+          Back to Blog
+        </a>
+
+        <!-- Header -->
+        <header class="mb-12">
+          <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-surface-900 dark:text-white leading-tight">
+            {post.data.title}
+          </h1>
+          <div class="flex flex-wrap items-center gap-4 mt-6">
+            <time class="text-sm font-mono text-surface-400 dark:text-surface-500">
+              {formatDate(post.data.pubDate)}
+            </time>
+            {post.data.tags.length > 0 && (
+              <div class="flex flex-wrap gap-2">
+                {post.data.tags.map((tag) => (
+                  <span class="inline-block rounded-full bg-primary-50 dark:bg-primary-500/10 px-3 py-1 text-xs font-medium text-primary-600 dark:text-primary-400">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </header>
+      </FadeIn>
+
+      <!-- Content -->
+      <FadeIn client:visible delay={0.1}>
+        <div class="prose prose-lg dark:prose-invert max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary-600 dark:prose-a:text-primary-400 prose-code:font-mono prose-code:text-sm prose-pre:bg-surface-900 dark:prose-pre:bg-surface-800 prose-pre:rounded-xl prose-img:rounded-xl">
+          <Content />
+        </div>
+      </FadeIn>
+    </div>
+  </article>
+</BaseLayout>
