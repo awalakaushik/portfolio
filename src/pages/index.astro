@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import FadeIn from "../components/FadeIn.tsx";
+import TypewriterText from "../components/TypewriterText.tsx";
 import ProjectCard from "../components/ProjectCard.tsx";
 import SectionHeading from "../components/SectionHeading.astro";
 import { getCollection } from "astro:content";
@@ -47,7 +48,7 @@ const categories = [...new Set(techStack.map((t) => t.data.category))];
             ></span>
             <span
               class="text-xs font-medium text-surface-600 dark:text-surface-400"
-              >Available for opportunities</span
+              >Let's discuss opportunities</span
             >
           </div>
 
@@ -64,9 +65,21 @@ const categories = [...new Set(techStack.map((t) => t.data.category))];
           <p
             class="text-lg md:text-xl text-surface-500 dark:text-surface-400 max-w-xl leading-relaxed"
           >
-            Software Engineer based in Houston, TX. Full-stack developer focused
-            on responsive, accessible design — passionate about efficiency,
-            optimization, and building with purpose.
+            <TypewriterText
+              client:load
+              phrases={[
+                "Software Engineer",
+                "Full Stack Developer",
+                "Front End Engineer",
+                "Web Application Developer",
+                "Healthcare Tech Builder",
+                "Cloud Architecture Enthusiast",
+              ]}
+              className="text-surface-900 dark:text-white font-semibold"
+            />
+            <br />
+            based in Houston, TX — passionate about efficiency, optimization, and
+            building with purpose.
           </p>
 
           <!-- CTAs -->

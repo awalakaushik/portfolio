@@ -66,6 +66,10 @@ Hover over the cards below to see how Astro island architecture works — static
 .dark .demo-hydration-card:hover {
   box-shadow: 0 8px 25px -5px rgba(0,0,0,0.4);
 }
+.demo-hydration-card:focus-within {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
 .demo-hydration-card .card-tag {
   display: inline-block;
   font-size: 0.7rem;
@@ -118,17 +122,17 @@ Hover over the cards below to see how Astro island architecture works — static
   color: white;
 }
 </style>
-<div class="demo-hydration-card demo-card-static">
+<div class="demo-hydration-card demo-card-static" tabindex="0" role="region" aria-label="Static component example: Footer">
   <span class="card-tag">Static (.astro)</span>
   <h4>Footer</h4>
   <p>Social links, copyright, tech credits. No client-side interactivity needed.</p>
-  <span class="js-badge">0 KB JS</span>
+  <span class="js-badge" aria-label="Zero kilobytes of JavaScript">0 KB JS</span>
 </div>
-<div class="demo-hydration-card demo-card-island">
+<div class="demo-hydration-card demo-card-island" tabindex="0" role="region" aria-label="Interactive island example: Navbar">
   <span class="card-tag">Island (.tsx)</span>
   <h4>Navbar</h4>
   <p>Mobile menu, dark mode toggle, scroll detection. Hydrates via <code>client:load</code>.</p>
-  <span class="js-badge">~7 KB JS</span>
+  <span class="js-badge" aria-label="Approximately seven kilobytes of JavaScript">~7 KB JS</span>
 </div>
 </div>
 
@@ -204,6 +208,10 @@ Click any season below to see its color palette. The gradient text and accent do
 .demo-season-btn:hover {
   transform: scale(1.05);
 }
+.demo-season-btn:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
 .demo-season-preview {
   padding: 1.5rem;
   border-radius: 1rem;
@@ -249,17 +257,17 @@ Click any season below to see its color palette. The gradient text and accent do
   border: 1px solid rgba(0,0,0,0.1);
 }
 </style>
-<div class="demo-season-btns">
-  <button class="demo-season-btn" onclick="setDemoSeason('winter')">❄️ Winter</button>
-  <button class="demo-season-btn" onclick="setDemoSeason('spring')">🌸 Spring</button>
-  <button class="demo-season-btn" onclick="setDemoSeason('summer')">☀️ Summer</button>
-  <button class="demo-season-btn" onclick="setDemoSeason('autumn')">🍂 Autumn</button>
+<div class="demo-season-btns" role="radiogroup" aria-label="Season palette selector">
+  <button class="demo-season-btn" role="radio" aria-checked="true" aria-label="Switch to Winter theme" onclick="setDemoSeason('winter')"><span aria-hidden="true">❄️</span> Winter</button>
+  <button class="demo-season-btn" role="radio" aria-checked="false" aria-label="Switch to Spring theme" onclick="setDemoSeason('spring')"><span aria-hidden="true">🌸</span> Spring</button>
+  <button class="demo-season-btn" role="radio" aria-checked="false" aria-label="Switch to Summer theme" onclick="setDemoSeason('summer')"><span aria-hidden="true">☀️</span> Summer</button>
+  <button class="demo-season-btn" role="radio" aria-checked="false" aria-label="Switch to Autumn theme" onclick="setDemoSeason('autumn')"><span aria-hidden="true">🍂</span> Autumn</button>
 </div>
-<div class="demo-season-preview" id="demo-season-card">
-  <span class="demo-accent-dot" id="demo-dot"></span>
+<div class="demo-season-preview" id="demo-season-card" aria-live="polite" aria-label="Season color palette preview">
+  <span class="demo-accent-dot" id="demo-dot" aria-hidden="true"></span>
   <span class="demo-gradient-text" id="demo-text">A portfolio built with 'Astro'</span>
-  <p class="demo-subtitle" id="demo-label">❄️ Winter — Indigo + Emerald</p>
-  <div class="demo-palette" id="demo-swatches"></div>
+  <p class="demo-subtitle" id="demo-label"><span aria-hidden="true">❄️</span> Winter — Indigo + Emerald</p>
+  <div class="demo-palette" id="demo-swatches" aria-label="Color swatches"></div>
 </div>
 <script>
 var demoSeasons = {
@@ -273,6 +281,10 @@ function setDemoSeason(s) {
   document.getElementById('demo-text').style.backgroundImage = 'linear-gradient(to right, ' + d.from + ', ' + d.via + ', ' + d.to + ')';
   document.getElementById('demo-dot').style.background = d.accent;
   document.getElementById('demo-label').textContent = d.label;
+  // Update ARIA checked states
+  document.querySelectorAll('.demo-season-btn').forEach(function(btn) {
+    btn.setAttribute('aria-checked', btn.textContent.trim().toLowerCase().indexOf(s) !== -1 ? 'true' : 'false');
+  });
   var sw = document.getElementById('demo-swatches');
   sw.innerHTML = '';
   d.primary.forEach(function(c) {
@@ -284,6 +296,7 @@ function setDemoSeason(s) {
   var acEl = document.createElement('div');
   acEl.className = 'demo-palette-swatch';
   acEl.style.background = d.accent;
+  acEl.setAttribute('aria-label', 'Accent color');
   sw.appendChild(acEl);
 }
 setDemoSeason('winter');
@@ -515,6 +528,10 @@ Click the buttons below to cycle through the contact form's four states:
 .demo-form-btn:hover {
   transform: scale(1.05);
 }
+.demo-form-btn:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
 .demo-form-btn.active-state {
   background: var(--color-primary-500);
   border-color: var(--color-primary-500);
@@ -595,19 +612,20 @@ Click the buttons below to cycle through the contact form's four states:
   animation: demo-spin 0.6s linear infinite;
 }
 </style>
-<div class="demo-form-btns">
-  <button class="demo-form-btn active-state" onclick="showFormState('idle')">Idle</button>
-  <button class="demo-form-btn" onclick="showFormState('submitting')">Submitting</button>
-  <button class="demo-form-btn" onclick="showFormState('success')">Success</button>
-  <button class="demo-form-btn" onclick="showFormState('error')">Error</button>
+<div class="demo-form-btns" role="radiogroup" aria-label="Form state selector">
+  <button class="demo-form-btn active-state" role="radio" aria-checked="true" aria-label="Show idle state" onclick="showFormState('idle')">Idle</button>
+  <button class="demo-form-btn" role="radio" aria-checked="false" aria-label="Show submitting state" onclick="showFormState('submitting')">Submitting</button>
+  <button class="demo-form-btn" role="radio" aria-checked="false" aria-label="Show success state" onclick="showFormState('success')">Success</button>
+  <button class="demo-form-btn" role="radio" aria-checked="false" aria-label="Show error state" onclick="showFormState('error')">Error</button>
 </div>
-<div class="demo-form-preview" id="demo-form"></div>
+<div class="demo-form-preview" id="demo-form" aria-live="polite" aria-label="Contact form state preview"></div>
 <script>
 function showFormState(state) {
   var form = document.getElementById('demo-form');
   var btns = document.querySelectorAll('.demo-form-btn');
-  btns.forEach(function(b) { b.classList.remove('active-state'); });
+  btns.forEach(function(b) { b.classList.remove('active-state'); b.setAttribute('aria-checked', 'false'); });
   event.target.classList.add('active-state');
+  event.target.setAttribute('aria-checked', 'true');
   if (state === 'idle') {
     form.innerHTML = '<input class="demo-form-input" placeholder="Your Name" value="John Doe" readonly>' +
       '<input class="demo-form-input" placeholder="Email" value="john@example.com" readonly>' +
