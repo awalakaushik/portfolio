@@ -1,6 +1,7 @@
 ---
 import Navbar from "../components/Navbar.tsx";
 import Footer from "../components/Footer.astro";
+import { ViewTransitions } from "astro:transitions";
 import "../styles/global.css";
 
 interface Props {
@@ -19,7 +20,7 @@ const canonicalURL = Astro.site
 ---
 
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -41,6 +42,8 @@ const canonicalURL = Astro.site
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
     <title>{title}</title>
+
+    <ViewTransitions />
 
     <!-- Inline dark-mode + season init to prevent FOUC -->
     <script is:inline>
@@ -75,10 +78,24 @@ const canonicalURL = Astro.site
         var season = stored || seasons[new Date().getMonth()];
         document.documentElement.setAttribute("data-season", season);
       })();
+
+      // Preserve theme + season across View Transitions
+      document.addEventListener("astro:before-swap", function (e) {
+        var isDark = document.documentElement.classList.contains("dark");
+        var season = document.documentElement.getAttribute("data-season");
+        if (isDark) {
+          e.newDocument.documentElement.classList.add("dark");
+        } else {
+          e.newDocument.documentElement.classList.remove("dark");
+        }
+        if (season) {
+          e.newDocument.documentElement.setAttribute("data-season", season);
+        }
+      });
     </script>
   </head>
   <body class="min-h-screen flex flex-col">
-    <Navbar client:load />
+    <Navbar client:load transition:persist />
     <main class="flex-1">
       <slot />
     </main>

@@ -14,6 +14,7 @@ export default function Navbar() {
     const [isDark, setIsDark] = useState(true);
     const [scrolled, setScrolled] = useState(false);
     const [season, setSeason] = useState('winter');
+    const [currentPath, setCurrentPath] = useState('/');
 
     const seasonEmojis: Record<string, string> = {
         spring: '🌸',
@@ -32,6 +33,18 @@ export default function Navbar() {
         // Read current season from DOM (set by inline script)
         const currentSeason = document.documentElement.getAttribute('data-season') || 'winter';
         setSeason(currentSeason);
+
+        // Detect current page
+        setCurrentPath(window.location.pathname);
+
+        // Update path after View Transitions swap
+        const onSwap = () => {
+            setCurrentPath(window.location.pathname);
+            setIsOpen(false);
+        };
+        document.addEventListener('astro:after-swap', onSwap);
+
+        return () => document.removeEventListener('astro:after-swap', onSwap);
     }, []);
 
     useEffect(() => {
@@ -53,6 +66,11 @@ export default function Navbar() {
         setSeason(next);
         document.documentElement.setAttribute('data-season', next);
         localStorage.setItem('season', next);
+    };
+
+    const isActive = (href: string) => {
+        if (href === '/') return currentPath === '/';
+        return currentPath.startsWith(href);
     };
 
     return (
@@ -80,7 +98,11 @@ export default function Navbar() {
                         <li key={link.href}>
                             <a
                                 href={link.href}
-                                className="relative px-4 py-2 text-sm font-medium text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-colors rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800/50"
+                                className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-colors ${isActive(link.href)
+                                    ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-500/10'
+                                    : 'text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white hover:bg-surface-100 dark:hover:bg-surface-800/50'
+                                    }`}
+                                aria-current={isActive(link.href) ? 'page' : undefined}
                             >
                                 {link.label}
                             </a>
@@ -155,7 +177,11 @@ export default function Navbar() {
                                     <a
                                         href={link.href}
                                         onClick={() => setIsOpen(false)}
-                                        className="block px-4 py-3 text-sm font-medium text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800/50 transition-colors"
+                                        className={`block px-4 py-3 text-sm font-medium rounded-xl transition-colors ${isActive(link.href)
+                                            ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-500/10'
+                                            : 'text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white hover:bg-surface-100 dark:hover:bg-surface-800/50'
+                                            }`}
+                                        aria-current={isActive(link.href) ? 'page' : undefined}
                                     >
                                         {link.label}
                                     </a>
