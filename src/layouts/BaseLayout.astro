@@ -1,7 +1,7 @@
 ---
-import Navbar from '../components/Navbar.tsx';
-import Footer from '../components/Footer.astro';
-import '../styles/global.css';
+import Navbar from "../components/Navbar.tsx";
+import Footer from "../components/Footer.astro";
+import "../styles/global.css";
 
 interface Props {
   title?: string;
@@ -9,8 +9,8 @@ interface Props {
 }
 
 const {
-  title = 'Awala, Kaushik Reddy — Front End Software Engineer',
-  description = 'Full-stack developer specializing in modern web technologies. Explore my projects, experience, and blog.',
+  title = "Awala, Kaushik Reddy — Front End Software Engineer",
+  description = "Full-stack developer specializing in modern web technologies. Explore my projects, experience, and blog.",
 } = Astro.props;
 
 const canonicalURL = Astro.site
@@ -18,7 +18,7 @@ const canonicalURL = Astro.site
   : Astro.url;
 ---
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
@@ -42,16 +42,39 @@ const canonicalURL = Astro.site
 
     <title>{title}</title>
 
-    <!-- Inline dark-mode init to prevent FOUC -->
+    <!-- Inline dark-mode + season init to prevent FOUC -->
     <script is:inline>
+      // Dark mode
       if (
-        localStorage.getItem('theme') === 'dark' ||
-        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        localStorage.getItem("theme") === "dark" ||
+        (!localStorage.getItem("theme") &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
       ) {
-        document.documentElement.classList.add('dark');
+        document.documentElement.classList.add("dark");
       } else {
-        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.remove("dark");
       }
+
+      // Seasonal palette
+      (function () {
+        var seasons = [
+          "winter",
+          "winter",
+          "spring",
+          "spring",
+          "spring",
+          "summer",
+          "summer",
+          "summer",
+          "autumn",
+          "autumn",
+          "autumn",
+          "winter",
+        ];
+        var stored = localStorage.getItem("season");
+        var season = stored || seasons[new Date().getMonth()];
+        document.documentElement.setAttribute("data-season", season);
+      })();
     </script>
   </head>
   <body class="min-h-screen flex flex-col">

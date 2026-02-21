@@ -92,3 +92,64 @@
         @apply px-6 md:px-12 lg:px-24 py-20 md:py-28;
     }
 }
+
+/* =============================================
+   SEASONAL COLOR PALETTES
+   Detected automatically based on the current month.
+   Override by setting data-season="spring|summer|autumn|winter"
+   on the <html> element.
+   ============================================= */
+
+/* --- Spring (Mar – May): Teal + Rose --- */
+html[data-season="spring"] {
+    --color-primary-50: #f0fdfa;
+    --color-primary-100: #ccfbf1;
+    --color-primary-200: #99f6e4;
+    --color-primary-300: #5eead4;
+    --color-primary-400: #2dd4bf;
+    --color-primary-500: #14b8a6;
+    --color-primary-600: #0d9488;
+    --color-primary-700: #0f766e;
+    --color-primary-800: #115e59;
+    --color-primary-900: #134e4a;
+    --color-accent-400: #fb7185;
+    --color-accent-500: #f43f5e;
+    --color-accent-600: #e11d48;
+}
+
+/* --- Summer (Jun – Aug): Amber + Cyan --- */
+html[data-season="summer"] {
+    --color-primary-50: #fffbeb;
+    --color-primary-100: #fef3c7;
+    --color-primary-200: #fde68a;
+    --color-primary-300: #fcd34d;
+    --color-primary-400: #fbbf24;
+    --color-primary-500: #f59e0b;
+    --color-primary-600: #d97706;
+    --color-primary-700: #b45309;
+    --color-primary-800: #92400e;
+    --color-primary-900: #78350f;
+    --color-accent-400: #22d3ee;
+    --color-accent-500: #06b6d4;
+    --color-accent-600: #0891b2;
+}
+
+/* --- Autumn (Sep – Nov): Orange + Gold --- */
+html[data-season="autumn"] {
+    --color-primary-50: #fff7ed;
+    --color-primary-100: #ffedd5;
+    --color-primary-200: #fed7aa;
+    --color-primary-300: #fdba74;
+    --color-primary-400: #fb923c;
+    --color-primary-500: #f97316;
+    --color-primary-600: #ea580c;
+    --color-primary-700: #c2410c;
+    --color-primary-800: #9a3412;
+    --color-primary-900: #7c2d12;
+    --color-accent-400: #facc15;
+    --color-accent-500: #eab308;
+    --color-accent-600: #ca8a04;
+}
+
+/* --- Winter (Dec – Feb): Indigo + Emerald (default) --- */
+/* Winter uses the base @theme values — no overrides needed */
