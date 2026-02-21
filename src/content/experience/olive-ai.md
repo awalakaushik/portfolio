@@ -1,5 +1,5 @@
 ---
-company: "Olive"
+company: "Olive AI"
 role: "Software Engineer"
 startDate: "2022-01"
 endDate: "2023-04"
@@ -7,4 +7,4 @@ description: "Developed healthcare automation software, building scalable web ap
 order: 2
 ---
 
-Developed healthcare automation software at Olive, building scalable web applications and APIs to streamline clinical workflows and improve patient outcomes.
+Developed healthcare automation software at Olive AI, building scalable web applications and APIs to streamline clinical workflows and improve patient outcomes.
