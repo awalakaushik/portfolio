@@ -63,38 +63,31 @@ const posthogHost =
       }
 
       // Seasonal palette
-      (function () {
-        var seasons = [
-          "winter",
-          "winter",
-          "spring",
-          "spring",
-          "spring",
-          "summer",
-          "summer",
-          "summer",
-          "autumn",
-          "autumn",
-          "autumn",
-          "winter",
-        ];
-        var stored = localStorage.getItem("season");
-        var season = stored || seasons[new Date().getMonth()];
-        document.documentElement.setAttribute("data-season", season);
-      })();
+      var seasons = [
+        "winter",
+        "winter",
+        "spring",
+        "spring",
+        "spring",
+        "summer",
+        "summer",
+        "summer",
+        "autumn",
+        "autumn",
+        "autumn",
+        "winter",
+      ];
+      document.documentElement.setAttribute("data-season", seasons[new Date().getMonth()]);
 
-      // Preserve theme + season across View Transitions
+      // Preserve theme across View Transitions; re-compute season from current month
       document.addEventListener("astro:before-swap", function (e) {
         var isDark = document.documentElement.classList.contains("dark");
-        var season = document.documentElement.getAttribute("data-season");
         if (isDark) {
           e.newDocument.documentElement.classList.add("dark");
         } else {
           e.newDocument.documentElement.classList.remove("dark");
         }
-        if (season) {
-          e.newDocument.documentElement.setAttribute("data-season", season);
-        }
+        e.newDocument.documentElement.setAttribute("data-season", seasons[new Date().getMonth()]);
       });
     </script>
 

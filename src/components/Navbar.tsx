@@ -65,7 +65,6 @@ export default function Navbar() {
         const next = seasonOrder[(currentIndex + 1) % seasonOrder.length];
         setSeason(next);
         document.documentElement.setAttribute('data-season', next);
-        localStorage.setItem('season', next);
     };
 
     const isActive = (href: string) => {
@@ -112,7 +111,8 @@ export default function Navbar() {
 
                 {/* Right controls */}
                 <div className="flex items-center gap-1">
-                    {/* Season Toggle */}
+                    {/* Season Toggle — dev mode only */}
+                    {import.meta.env.DEV && (
                     <button
                         onClick={cycleSeason}
                         aria-label={`Current season: ${season}. Click to change.`}
@@ -121,6 +121,7 @@ export default function Navbar() {
                     >
                         {seasonEmojis[season]}
                     </button>
+                    )}
 
                     {/* Theme Toggle */}
                     <button
