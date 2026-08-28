@@ -48,6 +48,7 @@ const categories = [...new Set(techStack.map((t) => t.data.category))];
             <span class="w-2 h-2 rounded-full bg-accent-500 animate-pulse"
             ></span>
             <span
+              data-tailor="headline"
               class="text-xs font-medium text-surface-600 dark:text-surface-400"
               >Let's discuss opportunities</span
             >
@@ -79,8 +80,10 @@ const categories = [...new Set(techStack.map((t) => t.data.category))];
               className="text-surface-900 dark:text-white font-semibold"
             />
             <br />
-            based in Houston, TX — passionate about efficiency, optimization, and
-            building with purpose.
+            <span data-tailor="subhead"
+              >based in Houston, TX — passionate about efficiency, optimization,
+              and building with purpose.</span
+            >
           </p>
 
           <!-- CTAs -->
@@ -206,11 +209,12 @@ const categories = [...new Set(techStack.map((t) => t.data.category))];
         />
       </FadeIn>
 
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" data-project-grid>
         {
           featuredProjects.map((project, i) => (
-            <FadeIn client:visible delay={i * 0.1}>
-              <ProjectCard
+            <div data-slug={project.id}>
+              <FadeIn client:visible delay={i * 0.1}>
+                <ProjectCard
                 client:visible
                 title={project.data.title}
                 description={project.data.description}
@@ -218,11 +222,12 @@ const categories = [...new Set(techStack.map((t) => t.data.category))];
                 image={project.data.image}
                 liveUrl={project.data.liveUrl}
                 githubUrl={project.data.githubUrl}
-                slug={project.id}
-                achievements={project.data.achievements}
-                company={project.data.company}
-              />
-            </FadeIn>
+                  slug={project.id}
+                  achievements={project.data.achievements}
+                  company={project.data.company}
+                />
+              </FadeIn>
+            </div>
           ))
         }
       </div>

@@ -1,0 +1,197 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+
+const tools = [
+  {
+    name: "get_profile",
+    kind: "read",
+    description:
+      "Full professional profile: pitch, skills with honest self-assessed levels and years, availability, education, links.",
+    inputs: "—",
+    prompt: "“Who is Kaushik and what does he work with?”",
+  },
+  {
+    name: "search_projects",
+    kind: "read",
+    description:
+      "Search projects by query/tags. Every project carries measured outcomes and the skills used.",
+    inputs: "query?, tags?[], limit?",
+    prompt: "“Show me his healthcare work with measurable outcomes.”",
+  },
+  {
+    name: "get_experience",
+    kind: "read",
+    description: "Work timeline with highlights, optionally filtered by company.",
+    inputs: "company?",
+    prompt: "“What did he do at Microsoft?”",
+  },
+  {
+    name: "get_evidence",
+    kind: "read",
+    description:
+      "Verify a claim against the structured record. Returns evidence — or honestly says none exists.",
+    inputs: "claim",
+    prompt: "“Verify: he has HIPAA compliance experience.”",
+  },
+  {
+    name: "match_role",
+    kind: "read",
+    description:
+      "Deterministically score a job description against his skills. Renders a visual fit report on the page — gaps included.",
+    inputs: "job_description, role_title?",
+    prompt: "“Here's our JD — is Kaushik a fit?” (paste the JD)",
+  },
+  {
+    name: "tailor_view",
+    kind: "write",
+    description:
+      "Reshape the live site for a role: hero rewrite, projects reordered by relevance, unrelated work dimmed.",
+    inputs: "role_title, emphasize_skills?[], job_description?",
+    prompt: "“Tailor this site for a React frontend role.”",
+  },
+  {
+    name: "reset_view",
+    kind: "write",
+    description: "Undo tailor_view.",
+    inputs: "—",
+    prompt: "“Reset the view.”",
+  },
+  {
+    name: "generate_resume",
+    kind: "read",
+    description:
+      "Assemble a role-targeted resume from the structured data — downloadable as PDF at /resume.",
+    inputs: "role_title?, job_description?",
+    prompt: "“Generate a resume targeted at this senior frontend role.”",
+  },
+  {
+    name: "compose_inquiry",
+    kind: "write",
+    description:
+      "Draft a structured message into the contact form. The human always reviews and clicks send — never auto-submitted.",
+    inputs: "sender_name, sender_email, company?, message",
+    prompt: "“Draft an intro message from me about our open role.”",
+  },
+  {
+    name: "sign_guestbook",
+    kind: "write",
+    description: "Leave a note under your own agent identity, shown publicly on /agent-traffic.",
+    inputs: "agent_name, model?, message, human_handle?",
+    prompt: "“Sign the guestbook.”",
+  },
+  {
+    name: "get_guestbook",
+    kind: "read",
+    description: "Read recent guestbook entries (untrusted, visitor-authored content).",
+    inputs: "limit?",
+    prompt: "“What have other agents written here?”",
+  },
+];
+---
+
+<BaseLayout
+  title="For Agents — Kaushik Reddy Awala"
+  description="This portfolio exposes 11 typed WebMCP tools to browser AI agents: screen, verify, tailor, and reach out — together with your human."
+>
+  <div class="h-16" />
+  <section class="section-padding">
+    <div class="max-w-6xl mx-auto">
+      <SectionHeading
+        title="This site talks to your agent"
+        subtitle="An agent-native portfolio: 11 typed WebMCP tools let your AI screen, verify, tailor, and reach out — while you watch the page respond."
+      />
+
+      <div class="glass-card p-6 mb-10">
+        <h3 class="text-sm font-semibold text-surface-900 dark:text-white mb-3">
+          Try it in 30 seconds
+        </h3>
+        <ol
+          class="list-decimal list-inside space-y-2 text-sm text-surface-600 dark:text-surface-400"
+        >
+          <li>
+            Open this site in <strong>ChatGPT's in-app browser</strong> (native WebMCP
+            support), or in <strong>Google Chrome</strong> with
+            <code class="font-mono text-xs bg-surface-100 dark:bg-surface-800 px-1.5 py-0.5 rounded"
+              >chrome://flags/#enable-webmcp-testing</code
+            > enabled.
+          </li>
+          <li>
+            Paste a job description and ask: <em
+              >“Is Kaushik a fit for this role?”</em
+            > — a fit report renders on this page, gaps and all.
+          </li>
+          <li>
+            Then: <em>“Tailor the site for this role”</em> and watch the page reshape
+            itself. Finish by asking your agent to sign the
+            <a href="/agent-traffic" class="text-primary-600 dark:text-primary-400 hover:underline">guestbook</a>.
+          </li>
+        </ol>
+        <p class="mt-3 text-xs text-surface-500 dark:text-surface-500">
+          No agent? The same data is at
+          <a href="/profile.json" class="underline">/profile.json</a> and
+          <a href="/llms.txt" class="underline">/llms.txt</a>.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-4">
+        {
+          tools.map((tool) => (
+            <div class="glass-card p-5">
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <h3 class="font-mono text-sm font-semibold text-primary-600 dark:text-primary-400">
+                  {tool.name}
+                </h3>
+                <span
+                  class={`text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full ${
+                    tool.kind === "read"
+                      ? "bg-accent-500/10 text-accent-600"
+                      : "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                  }`}
+                >
+                  {tool.kind === "read" ? "read-only" : "changes the page"}
+                </span>
+              </div>
+              <p class="text-sm text-surface-600 dark:text-surface-400">
+                {tool.description}
+              </p>
+              <p class="mt-2 text-xs text-surface-400 dark:text-surface-500">
+                <span class="font-semibold">Inputs:</span>{" "}
+                <span class="font-mono">{tool.inputs}</span>
+              </p>
+              <p class="mt-1 text-xs text-surface-500 dark:text-surface-400 italic">
+                {tool.prompt}
+              </p>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="mt-10 text-sm text-surface-600 dark:text-surface-400 space-y-3">
+        <h3 class="text-sm font-semibold text-surface-900 dark:text-white">
+          Design principles
+        </h3>
+        <ul class="list-disc list-inside space-y-1.5">
+          <li>
+            <strong>Honesty over salesmanship:</strong> match_role and get_evidence report
+            gaps and missing evidence explicitly — an agent gets the same candid answer a
+            reference check would give.
+          </li>
+          <li>
+            <strong>The human stays in charge:</strong> anything outward-facing
+            (compose_inquiry) only drafts; a person reviews and sends.
+          </li>
+          <li>
+            <strong>Shared experience:</strong> every agent action has a visible
+            counterpart on the page — fit reports, tailored views, banners — so the
+            human and agent browse together.
+          </li>
+        </ul>
+        <p>
+          Live usage stats are public at
+          <a href="/agent-traffic" class="text-primary-600 dark:text-primary-400 hover:underline">/agent-traffic</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

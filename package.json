@@ -11,13 +11,20 @@
   "dependencies": {
     "@astrojs/netlify": "^6.6.4",
     "@astrojs/react": "^4.4.2",
+    "@astrojs/sitemap": "^3.7.3",
+    "@nanostores/react": "^1.1.0",
+    "@netlify/blobs": "^10.7.13",
     "@tailwindcss/vite": "^4.2.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "astro": "^5.18.1",
     "framer-motion": "^12.34.2",
+    "nanostores": "^1.5.2",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "tailwindcss": "^4.2.0"
+  },
+  "devDependencies": {
+    "webmcp-types": "^0.1.5"
   }
 }

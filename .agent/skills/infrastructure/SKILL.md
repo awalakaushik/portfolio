@@ -80,9 +80,13 @@ Then rebuild. The Astro data store caches content collection entries.
 
 **Do NOT add new dependencies** without good reason. The project intentionally has a minimal dependency footprint:
 - No CSS framework beyond Tailwind
-- No state management library (React state is sufficient)
 - No CMS or headless API (content is in markdown files)
-- No analytics SDK (add via Netlify if needed)
+
+Deliberate exceptions (added for the WebMCP agent-native features, Aug 2026):
+- `nanostores` + `@nanostores/react` — tiny cross-island state for agent tool ↔ page UI
+- `@netlify/blobs` — guestbook + agent-traffic storage (server routes in `src/pages/api/`)
+- `@astrojs/sitemap`, `webmcp-types` (dev)
+- PostHog analytics snippet is inlined in `BaseLayout.astro` (keys via `PUBLIC_POSTHOG_*` env)
 
 If a dependency is needed, prefer:
 1. Astro integrations (`@astrojs/*`)
@@ -91,6 +95,6 @@ If a dependency is needed, prefer:
 
 ## Environment
 
-- No `.env` file required — all config is in checked-in files
+- Optional `.env` with `PUBLIC_POSTHOG_KEY` / `PUBLIC_POSTHOG_HOST` for analytics (gitignored; CI injects from GitHub secrets)
 - Dark mode: class-based, persisted to `localStorage`
-- No server-side secrets needed for the static site
+- Output is static except two server routes (`/api/guestbook`, `/api/agent-log`) running as Netlify Functions with Netlify Blobs — no extra secrets needed (Blobs auto-configures on Netlify)

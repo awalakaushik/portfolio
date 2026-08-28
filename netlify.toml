@@ -4,10 +4,3 @@
 
 [build.environment]
   NODE_VERSION = "20"
-
-# SPA-like routing for client-side navigation
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  conditions = {Role = ["admin"]}

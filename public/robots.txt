@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://awalakaushik.dev/sitemap-index.xml

@@ -91,6 +91,33 @@
     .section-padding {
         @apply px-6 md:px-12 lg:px-24 py-20 md:py-28;
     }
+
+    /* Low-relevance project cards under an active tailor_view */
+    .tailor-dimmed {
+        @apply opacity-40 saturate-50 transition-all duration-500;
+    }
+}
+
+/* ===== Print styles for /resume ===== */
+@media print {
+    .no-print,
+    nav,
+    footer {
+        display: none !important;
+    }
+    body {
+        background: white !important;
+        color: black !important;
+    }
+    .resume-sheet {
+        box-shadow: none !important;
+        border: none !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+    }
+    @page {
+        margin: 1.5cm;
+    }
 }
 
 /* ===== Blog Prose Typography ===== */

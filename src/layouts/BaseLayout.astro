@@ -1,7 +1,9 @@
 ---
 import Navbar from "../components/Navbar.tsx";
 import Footer from "../components/Footer.astro";
+import AgentBridge from "../components/AgentBridge.tsx";
 import { ViewTransitions } from "astro:transitions";
+import { getPortfolioData } from "../lib/portfolio-data";
 import "../styles/global.css";
 
 interface Props {
@@ -9,9 +11,11 @@ interface Props {
   description?: string;
 }
 
+const portfolioData = await getPortfolioData();
+
 const {
-  title = "Awala, Kaushik Reddy — Front End Software Engineer",
-  description = "Full-stack developer specializing in modern web technologies. Explore my projects, experience, and blog.",
+  title = `${portfolioData.name} — ${portfolioData.titles.seo}`,
+  description = portfolioData.pitch,
 } = Astro.props;
 
 const canonicalURL = Astro.site
@@ -172,6 +176,7 @@ const posthogHost =
   </head>
   <body class="min-h-screen flex flex-col">
     <Navbar client:load transition:persist />
+    <AgentBridge client:load transition:persist data={portfolioData} />
     <main class="flex-1">
       <slot />
     </main>

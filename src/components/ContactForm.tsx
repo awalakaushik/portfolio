@@ -1,10 +1,33 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
+import { $inquiryDraft, readSession, type InquiryDraft } from '../lib/stores';
 
 type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
 
 export default function ContactForm() {
     const [status, setStatus] = useState<FormStatus>('idle');
     const [errorMsg, setErrorMsg] = useState('');
+    // Draft composed by a visiting agent via the compose_inquiry WebMCP tool.
+    // The human always reviews and submits — the tool never sends.
+    const [fields, setFields] = useState({ name: '', email: '', company: '', message: '' });
+    const [agentComposed, setAgentComposed] = useState(false);
+
+    useEffect(() => {
+        const adopt = (draft: InquiryDraft | null) => {
+            if (!draft) return;
+            setFields({
+                name: draft.senderName,
+                email: draft.senderEmail,
+                company: draft.company ?? '',
+                message: draft.message,
+            });
+            setAgentComposed(true);
+        };
+        adopt(readSession<InquiryDraft>('inquiry'));
+        return $inquiryDraft.subscribe(adopt);
+    }, []);
+
+    const setField = (key: keyof typeof fields) => (e: { target: { value: string } }) =>
+        setFields((f) => ({ ...f, [key]: e.target.value }));
 
     async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -24,6 +47,9 @@ export default function ContactForm() {
             if (response.ok) {
                 setStatus('success');
                 form.reset();
+                setFields({ name: '', email: '', company: '', message: '' });
+                setAgentComposed(false);
+                $inquiryDraft.set(null);
             } else {
                 throw new Error(`Server responded with ${response.status}`);
             }
@@ -69,9 +95,29 @@ export default function ContactForm() {
         >
             {/* Hidden fields for Netlify */}
             <input type="hidden" name="form-name" value="contact" />
+            <input type="hidden" name="agent_composed" value={agentComposed ? 'true' : 'false'} />
             <p className="hidden">
                 <label>Don't fill this out: <input name="bot-field" /></label>
             </p>
+
+            {agentComposed && (
+                <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 flex items-start justify-between gap-3">
+                    <p className="text-sm text-amber-700 dark:text-amber-400">
+                        This draft was composed by an AI agent on your behalf. Review it carefully before sending.
+                    </p>
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setFields({ name: '', email: '', company: '', message: '' });
+                            setAgentComposed(false);
+                            $inquiryDraft.set(null);
+                        }}
+                        className="text-xs font-semibold text-amber-700 dark:text-amber-400 hover:underline shrink-0"
+                    >
+                        Discard
+                    </button>
+                </div>
+            )}
 
             {/* Name */}
             <div>
@@ -83,6 +129,8 @@ export default function ContactForm() {
                     id="name"
                     name="name"
                     required
+                    value={fields.name}
+                    onChange={setField('name')}
                     disabled={status === 'submitting'}
                     className="w-full px-4 py-3 rounded-xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-900/50 text-surface-900 dark:text-white placeholder-surface-400 dark:placeholder-surface-600 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 dark:focus:border-primary-500 outline-none transition-all disabled:opacity-50"
                     placeholder="John Doe"
@@ -99,6 +147,8 @@ export default function ContactForm() {
                     id="email"
                     name="email"
                     required
+                    value={fields.email}
+                    onChange={setField('email')}
                     disabled={status === 'submitting'}
                     className="w-full px-4 py-3 rounded-xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-900/50 text-surface-900 dark:text-white placeholder-surface-400 dark:placeholder-surface-600 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 dark:focus:border-primary-500 outline-none transition-all disabled:opacity-50"
                     placeholder="john@company.com"
@@ -114,6 +164,8 @@ export default function ContactForm() {
                     type="text"
                     id="company"
                     name="company"
+                    value={fields.company}
+                    onChange={setField('company')}
                     disabled={status === 'submitting'}
                     className="w-full px-4 py-3 rounded-xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-900/50 text-surface-900 dark:text-white placeholder-surface-400 dark:placeholder-surface-600 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 dark:focus:border-primary-500 outline-none transition-all disabled:opacity-50"
                     placeholder="Acme Inc."
@@ -129,6 +181,8 @@ export default function ContactForm() {
                     id="message"
                     name="message"
                     required
+                    value={fields.message}
+                    onChange={setField('message')}
                     rows={5}
                     disabled={status === 'submitting'}
                     className="w-full px-4 py-3 rounded-xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-900/50 text-surface-900 dark:text-white placeholder-surface-400 dark:placeholder-surface-600 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 dark:focus:border-primary-500 outline-none transition-all resize-none disabled:opacity-50"
