@@ -98,6 +98,25 @@
     }
 }
 
+/* Brief highlight pulse marking an element tailor_view just changed, so a
+   change below the fold (or a subtle text swap) still reads as "something
+   moved" without requiring the viewer to scroll or compare carefully. */
+@keyframes tailor-pulse {
+    0% {
+        box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-primary-500) 55%, transparent);
+    }
+    70% {
+        box-shadow: 0 0 0 14px color-mix(in srgb, var(--color-primary-500) 0%, transparent);
+    }
+    100% {
+        box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-primary-500) 0%, transparent);
+    }
+}
+.tailor-flash {
+    animation: tailor-pulse 1.2s ease-out;
+    border-radius: 0.75rem;
+}
+
 /* ===== Print styles for /resume ===== */
 @media print {
     .no-print,

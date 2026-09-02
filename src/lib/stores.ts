@@ -10,6 +10,9 @@ export interface TailorState {
     dimmedSlugs: string[];
     headline: string;
     subhead: string;
+    // Shown prominently right under the <h1> — the change a visitor is most
+    // likely to actually notice without scrolling.
+    roleBanner: string;
 }
 
 export interface InquiryDraft {
