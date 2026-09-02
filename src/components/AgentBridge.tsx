@@ -46,7 +46,7 @@ export default function AgentBridge({ data }: Props) {
         <>
             {/* Tailored-view banner */}
             {tailor && (
-                <div className="fixed top-16 inset-x-0 z-40 flex justify-center px-4 pointer-events-none">
+                <div className="no-print fixed top-16 inset-x-0 z-40 flex justify-center px-4 pointer-events-none">
                     <div className="pointer-events-auto flex items-center gap-3 rounded-full border border-primary-500/30 bg-white/90 dark:bg-surface-900/90 backdrop-blur-md px-4 py-2 shadow-lg shadow-primary-500/10">
                         <span className="w-2 h-2 rounded-full bg-accent-500 animate-pulse" />
                         <span className="text-xs font-medium text-surface-700 dark:text-surface-300">
@@ -67,7 +67,7 @@ export default function AgentBridge({ data }: Props) {
 
             {/* Fit report panel */}
             {fitReport && !fitDismissed && (
-                <aside className="fixed bottom-4 right-4 z-50 w-[min(24rem,calc(100vw-2rem))] max-h-[70vh] overflow-y-auto glass-card p-5 shadow-2xl shadow-primary-500/10">
+                <aside className="no-print fixed bottom-4 right-4 z-50 w-[min(24rem,calc(100vw-2rem))] max-h-[70vh] overflow-y-auto glass-card p-5 shadow-2xl shadow-primary-500/10">
                     <div className="flex items-start justify-between gap-3">
                         <div>
                             <p className="text-xs uppercase tracking-widest text-surface-400 dark:text-surface-500 font-semibold">
@@ -144,7 +144,7 @@ export default function AgentBridge({ data }: Props) {
 
             {/* Resume-ready toast */}
             {resumeSpec && !resumeDismissed && (
-                <div className="fixed bottom-4 left-4 z-50 glass-card p-4 w-[min(20rem,calc(100vw-2rem))] shadow-2xl">
+                <div className="no-print fixed bottom-4 left-4 z-50 glass-card p-4 w-[min(20rem,calc(100vw-2rem))] shadow-2xl">
                     <div className="flex items-start justify-between gap-2">
                         <p className="text-xs font-medium text-surface-700 dark:text-surface-300">
                             Resume tailored for{' '}
