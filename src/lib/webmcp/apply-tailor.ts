@@ -5,6 +5,15 @@ import type { TailorState } from '../stores';
 // revert without a reload. Re-run on every astro:page-load because a View
 // Transition swaps in fresh static HTML.
 
+function flash(el: HTMLElement) {
+    // Retrigger the CSS animation even if it was already applied (e.g. a
+    // second tailor_view call, or navigating back to a page that already
+    // had the class) by forcing a reflow between remove and re-add.
+    el.classList.remove('tailor-flash');
+    void el.offsetWidth;
+    el.classList.add('tailor-flash');
+}
+
 export function applyTailor(state: TailorState | null) {
     const targets = document.querySelectorAll<HTMLElement>('[data-tailor]');
     for (const el of targets) {
@@ -18,6 +27,10 @@ export function applyTailor(state: TailorState | null) {
         const kind = el.dataset.tailor;
         if (kind === 'headline') el.textContent = state.headline;
         else if (kind === 'subhead') el.textContent = state.subhead;
+        else if (kind === 'role-banner') {
+            el.textContent = state.roleBanner;
+            flash(el);
+        }
     }
 
     // Reorder + dim project cards wherever a grid exists on the current page.
@@ -43,5 +56,8 @@ export function applyTailor(state: TailorState | null) {
             card.classList.toggle('tailor-dimmed', state.dimmedSlugs.includes(card.dataset.slug ?? ''));
             grid.appendChild(card);
         }
+        // Flash the grid itself so a reorder that happens below the fold
+        // still registers as "something just moved" even before scrolling.
+        flash(grid);
     }
 }

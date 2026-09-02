@@ -169,6 +169,7 @@ export function buildTools(data: PortfolioData): ToolDef[] {
                     dimmedSlugs,
                     headline: `${skillLine} engineer — viewing as: ${inputs.role_title}`,
                     subhead: `${data.pitch}`,
+                    roleBanner: `Tailored for: ${inputs.role_title} — strongest match on ${skillLine}`,
                 };
                 $tailor.set(state);
                 applyTailor(state);
