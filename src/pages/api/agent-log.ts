@@ -32,8 +32,11 @@ export const GET: APIRoute = async () => {
         const stats = ((await store.get('stats/tool-counts.json', { type: 'json' })) as Stats | null) ?? EMPTY;
         const recent =
             ((await store.get('stats/recent.json', { type: 'json' })) as { tool: string; ok: boolean; ts: number }[] | null) ?? [];
-        const { blobs } = await store.list({ prefix: 'guestbook/' });
-        return jsonResponse({ ...stats, recent, guestbookCount: blobs.length }, 200, true);
+        // Fixed-key get, not list() — see /api/guestbook for why (eventual
+        // consistency on list() delayed new entries showing up by ~40s).
+        const guestbookEntries =
+            ((await store.get('guestbook/index.json', { type: 'json' })) as unknown[] | null) ?? [];
+        return jsonResponse({ ...stats, recent, guestbookCount: guestbookEntries.length }, 200, true);
     } catch {
         return jsonResponse({ ...EMPTY, recent: [], guestbookCount: 0, note: 'storage unavailable' }, 200);
     }
