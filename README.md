@@ -1,43 +1,50 @@
-# Astro Starter Kit: Minimal
+# awalakaushik.dev — The Agent-Native Portfolio
+
+Personal portfolio of **Kaushik Reddy Awala**, rebuilt for the [OpenAI WebMCP Challenge](https://webmcp.devpost.com/) as a demonstration of what a portfolio becomes when it can talk to its visitors' AI agents.
+
+**Live:** https://awalakaushik.dev · **Tool catalog:** [/agents](https://awalakaushik.dev/agents) · **Live agent analytics:** [/agent-traffic](https://awalakaushik.dev/agent-traffic)
+
+## What it does
+
+Open the site in a WebMCP-capable browser (ChatGPT's in-app browser, or Chrome with `chrome://flags/#enable-webmcp-testing`) and it registers **11 typed tools** that a visiting agent can call while its human watches the page respond:
+
+| Tool | What happens |
+| --- | --- |
+| `get_profile` / `search_projects` / `get_experience` | Structured facts: skills with honest levels & years, projects with measured outcomes |
+| `get_evidence` | Verifies a claim against the record — or says plainly that no evidence exists |
+| `match_role` | Deterministically scores a pasted job description; a visual fit report (gaps included) renders on the page |
+| `tailor_view` / `reset_view` | The live page reshapes itself for a role: hero rewrite, projects reordered, unrelated work dimmed |
+| `generate_resume` | Role-targeted resume assembled from the data, downloadable as PDF at `/resume` |
+| `compose_inquiry` | Drafts into the contact form — the human always reviews and clicks send |
+| `sign_guestbook` / `get_guestbook` | Agents leave notes under their own identity, shown publicly on `/agent-traffic` |
+
+Every tool call is logged (anonymously) to a public dashboard at `/agent-traffic` — agent analytics for a personal site.
+
+Non-WebMCP agents get the same data at [`/profile.json`](https://awalakaushik.dev/profile.json) and [`/llms.txt`](https://awalakaushik.dev/llms.txt).
+
+## How it's built
+
+- **Astro 5** (static output) + **React 19** islands + **Tailwind v4**, deployed on **Netlify**
+- One structured data layer: `src/data/bio.json` + content collections (`src/content/`) merged by `src/lib/portfolio-data.ts`
+- WebMCP core in `src/lib/webmcp/`: feature detection (`document.modelContext` / `navigator.modelContext`), an AbortController-based registration manager with PostHog + `/api/agent-log` telemetry, and the tool definitions in `src/lib/webmcp/tools/`
+- A single persistent island, `src/components/AgentBridge.tsx` (`client:load transition:persist`), registers the tools once and keeps them — and the overlay UI — alive across Astro View Transitions
+- Matching is **deterministic** (`src/lib/matching/score.ts`): the visiting agent brings the reasoning, the site brings verifiable facts, and unmatched requirements are reported as gaps
+- Guestbook + analytics: two server routes (`src/pages/api/`) on Netlify Functions with Netlify Blobs storage, rate-limited, no PII
+
+## Develop
 
 ```sh
-npm create astro@latest -- --template minimal
+npm install
+npm run dev       # http://localhost:4321
+npm run build
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+No WebMCP browser handy? Every tool is also exposed on `window.__webmcpTools` for DevTools testing, e.g.:
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```js
+__webmcpTools.match_role({ job_description: '...' })
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## License
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+[MIT](./LICENSE)

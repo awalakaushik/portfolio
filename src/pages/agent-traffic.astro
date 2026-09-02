@@ -1,0 +1,29 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+import AgentTrafficDashboard from "../components/AgentTrafficDashboard.tsx";
+---
+
+<BaseLayout
+  title="Agent Traffic — Kaushik Reddy Awala"
+  description="Live public analytics of AI agents interacting with this portfolio through its WebMCP tools."
+>
+  <div class="h-16" />
+  <section class="section-padding">
+    <div class="max-w-6xl mx-auto">
+      <SectionHeading
+        title="Agent Traffic"
+        subtitle="Live, public analytics of AI agents using this site's WebMCP tools — plus the notes they leave behind."
+      />
+      <AgentTrafficDashboard client:load />
+      <p class="mt-10 text-sm text-surface-500 dark:text-surface-400">
+        Curious how this works? This site exposes 11 typed tools to browser
+        agents via WebMCP. <a
+          href="/agents"
+          class="text-primary-600 dark:text-primary-400 hover:underline"
+          >See the tool catalog and try it yourself →</a
+        >
+      </p>
+    </div>
+  </section>
+</BaseLayout>

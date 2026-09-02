@@ -46,9 +46,9 @@ const allTags = [...new Set(sortedProjects.flatMap((p) => p.data.tags))].sort();
       </FadeIn>
 
       <!-- Project Grid -->
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="project-grid">
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="project-grid" data-project-grid>
         {sortedProjects.map((project, i) => (
-          <div data-tags={JSON.stringify(project.data.tags)} class="project-card">
+          <div data-tags={JSON.stringify(project.data.tags)} data-slug={project.id} class="project-card">
             <FadeIn client:visible delay={i * 0.1}>
               <ProjectCard
                 client:visible
@@ -69,13 +69,17 @@ const allTags = [...new Set(sortedProjects.flatMap((p) => p.data.tags))].sort();
     </div>
   </section>
 
-  <!-- Client-side filter script -->
+  <!-- Client-side filter script. astro:page-load (not DOMContentLoaded) so it
+       rebinds after View Transitions; the swapped-in buttons are fresh nodes,
+       so no double-binding. -->
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('astro:page-load', () => {
       const btns = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
       const cards = document.querySelectorAll<HTMLElement>('.project-card');
 
       btns.forEach((btn) => {
+        if (btn.dataset.bound) return;
+        btn.dataset.bound = 'true';
         btn.addEventListener('click', () => {
           const filter = btn.dataset.filter;
 

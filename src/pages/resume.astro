@@ -1,0 +1,17 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ResumeView from "../components/ResumeView.tsx";
+import { getPortfolioData } from "../lib/portfolio-data";
+
+const data = await getPortfolioData();
+---
+
+<BaseLayout
+  title={`Resume — ${data.name}`}
+  description="Role-targeted resume generated from structured portfolio data. Agents can tailor it via WebMCP."
+>
+  <div class="h-16 no-print" />
+  <section class="section-padding print:p-0">
+    <ResumeView client:load data={data} />
+  </section>
+</BaseLayout>
