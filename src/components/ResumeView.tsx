@@ -8,14 +8,32 @@ interface Props {
 }
 
 // Renders either the agent-tailored resume (from sessionStorage, written by
-// the generate_resume WebMCP tool) or the default full resume. Print
-// stylesheet in global.css turns the browser's print dialog into the PDF export.
+// the generate_resume WebMCP tool) or the default full resume.
 export default function ResumeView({ data }: Props) {
     const [spec, setSpec] = useState<ResumeSpec | null>(null);
 
     useEffect(() => {
         setSpec(readSession<ResumeSpec>('resume') ?? buildResume(data));
     }, [data]);
+
+    const [downloading, setDownloading] = useState(false);
+    const [downloadError, setDownloadError] = useState<string | null>(null);
+
+    async function downloadPdf() {
+        if (!spec || downloading) return;
+        setDownloading(true);
+        setDownloadError(null);
+        try {
+            // Load PDF generation only when requested, keeping the initial page light.
+            const { downloadResumePdf } = await import('../lib/resume/pdf');
+            await downloadResumePdf(spec);
+        } catch (error) {
+            console.error('Resume PDF download failed', error);
+            setDownloadError('Unable to download the PDF. Please try again.');
+        } finally {
+            setDownloading(false);
+        }
+    }
 
     if (!spec) return null;
 
@@ -33,12 +51,20 @@ export default function ResumeView({ data }: Props) {
                     )}
                 </p>
                 <button
-                    onClick={() => window.print()}
-                    className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-500 text-white font-medium text-sm transition-all"
+                    onClick={downloadPdf}
+                    disabled={downloading}
+                    aria-busy={downloading}
+                    className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-500 text-white font-medium text-sm transition-all disabled:opacity-60 disabled:cursor-wait"
                 >
-                    Download PDF
+                    {downloading ? 'Preparing PDF…' : 'Download PDF'}
                 </button>
             </div>
+
+            {downloadError && (
+                <p role="alert" className="no-print mb-4 text-sm text-red-600 dark:text-red-400">
+                    {downloadError}
+                </p>
+            )}
 
             <article className="resume-sheet glass-card p-8 md:p-12 print:bg-white">
                 <header className="border-b border-surface-200 dark:border-surface-700 pb-5 mb-6">

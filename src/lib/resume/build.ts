@@ -2,7 +2,7 @@ import type { PortfolioData } from '../portfolio-data';
 import { rankProjects } from '../matching/score';
 
 // Assembles a role-targeted resume purely from the structured portfolio data.
-// Rendered by /resume (ResumeView island) with a print stylesheet for PDF.
+// Rendered by /resume (ResumeView island) with a direct PDF download.
 
 export interface ResumeSpec {
     roleTitle: string;
