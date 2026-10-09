@@ -21,6 +21,7 @@ const allTags = [...new Set(sortedProjects.flatMap((p) => p.data.tags))].sort();
       <FadeIn client:visible>
         <SectionHeading
           title="Projects"
+          as="h1"
           subtitle="Everything I've built — from side projects to production applications."
         />
       </FadeIn>

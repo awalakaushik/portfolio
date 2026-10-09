@@ -5,6 +5,7 @@ import TypewriterText from "../components/TypewriterText.tsx";
 import ProjectCard from "../components/ProjectCard.tsx";
 import SectionHeading from "../components/SectionHeading.astro";
 import { getCollection } from "astro:content";
+import EngineeringCore from "../components/EngineeringCore.tsx";
 
 // Fetch content
 const allProjects = await getCollection("projects");
@@ -37,8 +38,8 @@ const categories = [...new Set(techStack.map((t) => t.data.category))];
       </div>
     </div>
 
-    <div class="relative max-w-6xl mx-auto w-full">
-      <FadeIn client:visible>
+    <div class="relative max-w-6xl mx-auto w-full hero-grid">
+      <FadeIn client:visible className="hero-copy">
         <div class="flex flex-col gap-6">
           <!-- Tag -->
           <a
@@ -57,7 +58,7 @@ const categories = [...new Set(techStack.map((t) => t.data.category))];
           <p class="font-mono text-xs uppercase tracking-widest text-primary-700 dark:text-primary-300">Frontend architecture · Full-stack systems · Agent-ready interfaces</p>
           <!-- Heading -->
           <h1
-            class="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1]"
+            class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1]"
           >
             <span class="text-surface-900 dark:text-white">Hi, I'm</span>
             <br />
@@ -121,8 +122,14 @@ const categories = [...new Set(techStack.map((t) => t.data.category))];
               Get in Touch
             </a>
           </div>
+          <nav aria-label="Explore portfolio" class="flex flex-wrap gap-x-5 gap-y-2 text-sm text-primary-700 dark:text-primary-300">
+            <a href="#tech-stack" class="underline underline-offset-4">Browse skills ↓</a>
+            <a href="/resume" class="underline underline-offset-4">View résumé ↗</a>
+            <a href="/agents" class="underline underline-offset-4">Explore with an AI agent ↗</a>
+          </nav>
         </div>
       </FadeIn>
+      <EngineeringCore client:load />
     </div>
 
     <!-- Scroll indicator -->
@@ -139,7 +146,7 @@ const categories = [...new Set(techStack.map((t) => t.data.category))];
   </section>
 
   <!-- ===== ABOUT SNIPPET ===== -->
-  <section class="section-padding bg-surface-50/50 dark:bg-surface-900/20">
+  <section id="about-preview" class="section-padding bg-surface-50/50 dark:bg-surface-900/20">
     <div class="max-w-6xl mx-auto">
       <FadeIn client:visible>
         <SectionHeading
@@ -266,7 +273,7 @@ const categories = [...new Set(techStack.map((t) => t.data.category))];
   </section>
 
   <!-- ===== TECH STACK ===== -->
-  <section class="section-padding bg-surface-50/50 dark:bg-surface-900/20">
+  <section id="tech-stack" class="section-padding bg-surface-50/50 dark:bg-surface-900/20 scroll-mt-16">
     <div class="max-w-6xl mx-auto">
       <FadeIn client:visible>
         <SectionHeading

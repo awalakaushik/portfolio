@@ -298,6 +298,8 @@
 
 /* Tables */
 .prose table {
+    display: block;
+    overflow-x: auto;
     width: 100%;
     border-collapse: collapse;
     margin-top: 1.5rem;
@@ -360,6 +362,12 @@
 .dark .text-gradient {
     @apply from-primary-300 to-accent-400;
 }
+.hero-grid { display:grid; align-items:center; gap:3rem; }
+.hero-copy { min-width:0; }
+@media(min-width:64rem) { .hero-grid { grid-template-columns:1.15fr 1fr; } }
+main > section { position:relative; }
+.glass-card { box-shadow:0 1rem 3rem -2rem color-mix(in srgb,var(--color-primary-500) 25%,transparent); }
+.dark body { background-image:radial-gradient(ellipse at top,color-mix(in srgb,var(--color-primary-900) 25%,transparent),transparent 60%); }
 :focus-visible { outline: 0.125rem solid var(--color-primary-500); outline-offset: 0.25rem; }
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }

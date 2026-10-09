@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FadeIn from '../../components/FadeIn.tsx';
 import { getCollection, render } from 'astro:content';
+import ArticleToolDemo from '../../components/ArticleToolDemo.tsx';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blogs');
@@ -23,7 +24,7 @@ function formatDate(date: Date): string {
 }
 ---
 
-<BaseLayout title={`${post.data.title} — Kaushik Reddy Awala`} description={post.data.description}>
+<BaseLayout title={`${post.data.title} — Kaushik Reddy Awala`} description={post.data.description} article={{ title: post.data.title, description: post.data.description, date: post.data.pubDate, tags: post.data.tags }}>
   <!-- Spacer for fixed navbar -->
   <div class="h-16" />
 
@@ -47,7 +48,7 @@ function formatDate(date: Date): string {
             {post.data.title}
           </h1>
           <div class="flex flex-wrap items-center gap-4 mt-6">
-            <time class="text-sm font-mono text-surface-400 dark:text-surface-500">
+            <time datetime={post.data.pubDate.toISOString()} class="text-sm font-mono text-surface-400 dark:text-surface-500">
               {formatDate(post.data.pubDate)}
             </time>
             {post.data.tags.length > 0 && (
@@ -62,6 +63,8 @@ function formatDate(date: Date): string {
           </div>
         </header>
       </FadeIn>
+      {post.id === 'add-webmcp-to-your-website' && <ArticleToolDemo client:load />}
+      {post.id === 'add-webmcp-to-your-website' && <noscript>The demo needs JavaScript. The article and code examples remain readable.</noscript>}
 
       <!-- Content -->
       <FadeIn client:visible delay={0.1}>

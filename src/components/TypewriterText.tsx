@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 
 interface TypewriterTextProps {
     phrases: string[];
@@ -16,13 +16,15 @@ export default function TypewriterText({
     pauseDuration = 2000,
     className = '',
 }: TypewriterTextProps) {
-    const [displayText, setDisplayText] = useState('');
+    const [displayText, setDisplayText] = useState(phrases[0] ?? '');
+    const reducedMotion = useReducedMotion();
     const [phraseIndex, setPhraseIndex] = useState(0);
     const [isDeleting, setIsDeleting] = useState(false);
     const [showCursor, setShowCursor] = useState(true);
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
     useEffect(() => {
+        if (reducedMotion) return;
         const currentPhrase = phrases[phraseIndex];
 
         if (!isDeleting && displayText === currentPhrase) {
@@ -48,25 +50,26 @@ export default function TypewriterText({
         }, speed);
 
         return () => clearTimeout(timeoutRef.current);
-    }, [displayText, isDeleting, phraseIndex, phrases, typingSpeed, deletingSpeed, pauseDuration]);
+    }, [displayText, isDeleting, phraseIndex, phrases, typingSpeed, deletingSpeed, pauseDuration, reducedMotion]);
 
     // Blinking cursor
     useEffect(() => {
+        if (reducedMotion) return;
         const cursorInterval = setInterval(() => {
             setShowCursor((prev) => !prev);
         }, 530);
         return () => clearInterval(cursorInterval);
-    }, []);
+    }, [reducedMotion]);
 
     return (
-        <span className={className} aria-label={phrases[phraseIndex]} role="status">
+        <span className={className} aria-label={phrases.join(', ')}>
             <span aria-hidden="true">
-                {displayText}
+                {reducedMotion ? phrases[0] : displayText}
                 <motion.span
                     className="inline-block w-[3px] ml-0.5 bg-primary-500 relative -top-[1px]"
                     style={{
                         height: '0.85em',
-                        opacity: showCursor ? 1 : 0,
+                        opacity: !reducedMotion && showCursor ? 1 : 0,
                     }}
                 />
             </span>
