@@ -1,4 +1,4 @@
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, useReducedMotion } from 'framer-motion';
 import { useRef } from 'react';
 
 interface TimelineItemProps {
@@ -19,14 +19,15 @@ export default function TimelineItem({
     index,
 }: TimelineItemProps) {
     const ref = useRef<HTMLDivElement>(null);
+    const reducedMotion = useReducedMotion();
     const isInView = useInView(ref, { once: true, margin: '-100px' });
 
     return (
         <motion.div
             ref={ref}
-            initial={{ opacity: 0, x: index % 2 === 0 ? -40 : 40 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
+            initial={false}
+            animate={{ opacity: 1, x: 0, y: isInView || reducedMotion ? 0 : 8 }}
+            transition={{ duration: reducedMotion ? 0 : 0.6, delay: reducedMotion ? 0 : 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="relative pl-8 md:pl-12 pb-12 last:pb-0 group"
         >
             {/* Timeline line */}

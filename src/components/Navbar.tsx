@@ -53,7 +53,7 @@ export default function Navbar() {
 
     return (
         <motion.header
-            initial={{ y: -80 }}
+            initial={false}
             animate={{ y: 0 }}
             transition={{ type: 'spring', stiffness: 120, damping: 20 }}
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled

@@ -9,6 +9,7 @@ import "../styles/global.css";
 interface Props {
   title?: string;
   description?: string;
+  article?: { title: string; description: string; date: Date; tags: string[] };
 }
 
 const portfolioData = await getPortfolioData();
@@ -16,11 +17,27 @@ const portfolioData = await getPortfolioData();
 const {
   title = `${portfolioData.name} — ${portfolioData.titles.seo}`,
   description = portfolioData.pitch,
+  article,
 } = Astro.props;
 
 const canonicalURL = Astro.site
   ? new URL(Astro.url.pathname, Astro.site)
   : Astro.url;
+const siteURL = Astro.site ?? new URL(portfolioData.website);
+const imageURL = new URL('/images/portfolio-social.png', siteURL);
+const personID = new URL('/#person', siteURL).href;
+const graph: Record<string, unknown>[] = [
+  { '@type': 'Person', '@id': personID, name: portfolioData.name, url: siteURL.href,
+    jobTitle: portfolioData.titles.primary, description: portfolioData.pitch,
+    sameAs: [`https://github.com/${portfolioData.social.github}`, `https://www.linkedin.com/in/${portfolioData.social.linkedin}`] },
+  { '@type': 'WebSite', '@id': new URL('/#website', siteURL).href, url: siteURL.href, name: `${portfolioData.name} — Portfolio`, publisher: { '@id': personID } },
+  { '@type': Astro.url.pathname === '/about' || Astro.url.pathname === '/' ? 'ProfilePage' : 'WebPage', '@id': canonicalURL.href,
+    url: canonicalURL.href, name: title, description, isPartOf: { '@id': new URL('/#website', siteURL).href }, mainEntity: { '@id': article ? `${canonicalURL.href}#article` : personID } },
+];
+if (article) graph.push({ '@type': 'BlogPosting', '@id': `${canonicalURL.href}#article`, headline: article.title, description: article.description,
+  datePublished: article.date.toISOString(), keywords: article.tags.join(', '),
+  author: { '@id': personID }, publisher: { '@id': personID }, mainEntityOfPage: canonicalURL.href, image: imageURL.href });
+const structuredData = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(/</g, '\\u003c');
 
 const posthogKey = import.meta.env.PUBLIC_POSTHOG_KEY || "";
 const posthogHost =
@@ -34,17 +51,28 @@ const posthogHost =
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
+    <meta name="author" content={portfolioData.name} />
+    <link rel="alternate" type="application/json" href="/profile.json" title="Structured portfolio profile" />
+    <script type="application/ld+json" is:inline set:html={structuredData} />
 
     <!-- Open Graph -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={article ? 'article' : 'website'} />
     <meta property="og:url" content={canonicalURL} />
+    <meta property="og:site_name" content={`${portfolioData.name} — Portfolio`} />
+    <meta property="og:image" content={imageURL} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${portfolioData.name} — software engineering portfolio`} />
+    {article && <meta property="article:published_time" content={article.date.toISOString()} />}
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageURL} />
+    <meta name="twitter:image:alt" content={`${portfolioData.name} — software engineering portfolio`} />
 
     <link rel="canonical" href={canonicalURL} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

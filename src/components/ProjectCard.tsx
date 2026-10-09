@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 
 interface ProjectCardProps {
     title: string;
@@ -24,13 +23,11 @@ export default function ProjectCard({
     achievements = [],
     company,
 }: ProjectCardProps) {
-    const [isHovered, setIsHovered] = useState(false);
+    const reduceMotion = useReducedMotion();
 
     return (
         <motion.article
-            whileHover={{ y: -6, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
-            onHoverStart={() => setIsHovered(true)}
-            onHoverEnd={() => setIsHovered(false)}
+            whileHover={reduceMotion ? undefined : { y: -6, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
             className="group relative flex flex-col overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900/50 transition-shadow duration-300 hover:shadow-2xl hover:shadow-primary-500/10 dark:hover:shadow-primary-500/5"
         >
             {/* Image */}
@@ -39,6 +36,9 @@ export default function ProjectCard({
                     <img
                         src={image}
                         alt={title}
+                        loading="lazy"
+                        width={800}
+                        height={450}
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-surface-900/20 to-transparent" />
@@ -108,38 +108,10 @@ export default function ProjectCard({
                     )}
                 </div>
 
-                {/* Achievements hover overlay */}
-                <AnimatePresence>
-                    {isHovered && achievements.length > 0 && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 10 }}
-                            transition={{ duration: 0.2 }}
-                            className="absolute inset-0 p-6 flex flex-col justify-center rounded-b-2xl bg-white/95 dark:bg-surface-900/95 backdrop-blur-sm border-t border-primary-500/20"
-                        >
-                            <p className="text-xs font-semibold text-primary-600 dark:text-primary-400 uppercase tracking-wider mb-3">
-                                Key Achievements
-                            </p>
-                            <ul className="space-y-2">
-                                {achievements.map((achievement, idx) => (
-                                    <motion.li
-                                        key={idx}
-                                        initial={{ opacity: 0, x: -10 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: idx * 0.05 }}
-                                        className="flex items-start gap-2 text-sm text-surface-700 dark:text-surface-300"
-                                    >
-                                        <svg className="w-4 h-4 text-accent-500 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        {achievement}
-                                    </motion.li>
-                                ))}
-                            </ul>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                <details className="mt-4 text-sm text-surface-600 dark:text-surface-300">
+                    <summary className="cursor-pointer font-medium text-primary-700 dark:text-primary-300">Key Achievements</summary>
+                    <ul className="mt-3 space-y-2">{achievements.map(item => <li key={item}>{item}</li>)}</ul>
+                </details>
             </div>
 
             {/* Hover glow effect */}
