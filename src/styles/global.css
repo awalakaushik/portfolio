@@ -362,14 +362,35 @@
 .dark .text-gradient {
     @apply from-primary-300 to-accent-400;
 }
-.hero-grid { display:grid; align-items:center; gap:3rem; }
-.hero-copy { min-width:0; }
-@media(min-width:64rem) { .hero-grid { grid-template-columns:1.15fr 1fr; } }
+.hero-copy { min-width:0; max-width:64rem; }
 main > section { position:relative; }
 .glass-card { box-shadow:0 1rem 3rem -2rem color-mix(in srgb,var(--color-primary-500) 25%,transparent); }
 .dark body { background-image:radial-gradient(ellipse at top,color-mix(in srgb,var(--color-primary-900) 25%,transparent),transparent 60%); }
-:focus-visible { outline: 0.125rem solid var(--color-primary-500); outline-offset: 0.25rem; }
+:focus-visible { outline: 0.1875rem solid var(--color-primary-700); outline-offset: 0.25rem; }
+.dark :focus-visible { outline-color:var(--color-primary-300); }
+:target { scroll-margin-top:6rem; }
+.motion-toggle { min-height:2.75rem; }
+.motion-toggle[aria-pressed="true"] { box-shadow:inset 0 0 0 .0625rem var(--color-primary-500); }
+.mobile-navigation:not([hidden]) { animation:menu-appear .22s ease-out; }
+@keyframes menu-appear { from { opacity:.65; } to { opacity:1; } }
+.project-surface { transition:transform .45s cubic-bezier(.22,1,.36,1),box-shadow .45s ease,border-color .3s ease; }
+.project-image { transition:transform .65s cubic-bezier(.22,1,.36,1); }
+.project-surface:focus-within { border-color:var(--color-primary-500); box-shadow:0 1rem 2.5rem -1.5rem color-mix(in srgb,var(--color-primary-500) 35%,transparent); }
+@media(hover:hover) and (pointer:fine) {
+    .project-surface:hover { transform:translateY(-.25rem); border-color:var(--color-primary-400); box-shadow:0 1.5rem 3rem -2rem color-mix(in srgb,var(--color-primary-500) 40%,transparent); }
+    .project-surface:hover .project-image { transform:scale(1.025); }
+}
+/* Keep text legible in both themes, including low-emphasis metadata. */
+body .text-surface-400, body .text-surface-500 { color:var(--color-surface-600); }
+.dark body .text-surface-400, .dark body .text-surface-500 { color:var(--color-surface-400); }
+/* Motion is progressive enhancement. No continuous animation is needed. */
+html[data-motion="off"] { scroll-behavior:auto; }
+html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="off"] *::after { animation:none !important; transition:none !important; }
+html[data-motion="off"] .project-surface:hover, html[data-motion="off"] .project-image, html[data-motion="off"] [class*="hover:-translate"], html[data-motion="off"] [class*="active:scale"] { transform:none !important; }
+html[data-motion="off"]::view-transition-old(root), html[data-motion="off"]::view-transition-new(root) { animation:none !important; }
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    *, *::before, *::after { animation:none !important; transition:none !important; }
+    .project-surface:hover, .project-image, [class*="hover:-translate"], [class*="active:scale"] { transform:none !important; }
+    ::view-transition-old(root), ::view-transition-new(root) { animation:none !important; }
 }

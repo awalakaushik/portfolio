@@ -48,7 +48,7 @@ export default function AgentBridge({ data }: Props) {
             {tailor && (
                 <div className="no-print fixed top-16 inset-x-0 z-40 flex justify-center px-4 pointer-events-none">
                     <div className="pointer-events-auto flex items-center gap-3 rounded-full border border-primary-500/30 bg-white/90 dark:bg-surface-900/90 backdrop-blur-md px-4 py-2 shadow-lg shadow-primary-500/10">
-                        <span className="w-2 h-2 rounded-full bg-accent-500 animate-pulse" />
+                        <span className="w-2 h-2 rounded-full bg-accent-600" />
                         <span className="text-xs font-medium text-surface-700 dark:text-surface-300">
                             Viewing as: <span className="text-primary-600 dark:text-primary-400">{tailor.roleTitle}</span> — tailored by an AI agent
                         </span>

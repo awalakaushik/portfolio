@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { useMotionDisabled, setMotionDisabled } from '../lib/motion-preference';
 
 const navLinks = [
     { href: '/', label: 'Home' },
@@ -14,6 +14,21 @@ export default function Navbar() {
     const [isDark, setIsDark] = useState(true);
     const [scrolled, setScrolled] = useState(false);
     const [currentPath, setCurrentPath] = useState('/');
+    const motionDisabled = useMotionDisabled();
+    const menuButton = useRef<HTMLButtonElement>(null);
+    const [systemReduced, setSystemReduced] = useState(false);
+
+    useEffect(() => {
+        const media = matchMedia('(prefers-reduced-motion: reduce)');
+        const update = () => setSystemReduced(media.matches);
+        update(); media.addEventListener('change', update);
+        const escape = (event: KeyboardEvent) => {
+            if (event.key !== 'Escape' || !isOpen) return;
+            setIsOpen(false); menuButton.current?.focus();
+        };
+        document.addEventListener('keydown', escape);
+        return () => { media.removeEventListener('change', update); document.removeEventListener('keydown', escape); };
+    }, [isOpen]);
 
     useEffect(() => {
         const stored = localStorage.getItem('theme');
@@ -52,10 +67,7 @@ export default function Navbar() {
     };
 
     return (
-        <motion.header
-            initial={false}
-            animate={{ y: 0 }}
-            transition={{ type: 'spring', stiffness: 120, damping: 20 }}
+        <header
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
                 ? 'bg-white/80 dark:bg-surface-950/80 backdrop-blur-xl shadow-lg shadow-surface-900/5 dark:shadow-surface-950/30'
                 : 'bg-transparent'
@@ -90,11 +102,19 @@ export default function Navbar() {
 
                 {/* Right controls */}
                 <div className="flex items-center gap-1">
+                    <button type="button" aria-pressed={motionDisabled} disabled={systemReduced}
+                        title={systemReduced ? 'Your device requests reduced motion' : 'Turn off nonessential animations'}
+                        onClick={() => setMotionDisabled(!motionDisabled)}
+                        className="motion-toggle rounded-lg px-2 text-xs font-medium text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 disabled:opacity-70">
+                        Reduce motion
+                    </button>
                     {/* Theme Toggle */}
                     <button
                         onClick={toggleTheme}
                         aria-label="Toggle dark mode"
-                        className="p-2 rounded-xl text-surface-500 hover:text-surface-900 dark:hover:text-white hover:bg-surface-100 dark:hover:bg-surface-800/50 transition-all"
+                        type="button"
+                        aria-pressed={isDark}
+                        className="min-h-11 min-w-11 flex items-center justify-center p-2 rounded-xl text-surface-500 hover:text-surface-900 dark:hover:text-white hover:bg-surface-100 dark:hover:bg-surface-800/50 transition-all"
                     >
                         {isDark ? (
                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -111,7 +131,11 @@ export default function Navbar() {
                     <button
                         onClick={() => setIsOpen(!isOpen)}
                         aria-label="Toggle navigation menu"
-                        className="md:hidden p-2 rounded-xl text-surface-500 hover:text-surface-900 dark:hover:text-white hover:bg-surface-100 dark:hover:bg-surface-800/50 transition-all"
+                        ref={menuButton}
+                        type="button"
+                        aria-expanded={isOpen}
+                        aria-controls="mobile-navigation"
+                        className="md:hidden min-h-11 min-w-11 flex items-center justify-center p-2 rounded-xl text-surface-500 hover:text-surface-900 dark:hover:text-white hover:bg-surface-100 dark:hover:bg-surface-800/50 transition-all"
                     >
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             {isOpen ? (
@@ -125,22 +149,13 @@ export default function Navbar() {
             </nav>
 
             {/* Mobile Menu */}
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                        className="md:hidden overflow-hidden bg-white/95 dark:bg-surface-950/95 backdrop-blur-xl border-t border-surface-200 dark:border-surface-800"
+                    <div id="mobile-navigation" hidden={!isOpen}
+                        className="mobile-navigation md:hidden bg-white/95 dark:bg-surface-950/95 backdrop-blur-xl border-t border-surface-200 dark:border-surface-800"
                     >
                         <ul className="px-6 py-4 space-y-1">
-                            {navLinks.map((link, i) => (
-                                <motion.li
+                            {navLinks.map((link) => (
+                                <li
                                     key={link.href}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: i * 0.05 }}
                                 >
                                     <a
                                         href={link.href}
@@ -153,12 +168,10 @@ export default function Navbar() {
                                     >
                                         {link.label}
                                     </a>
-                                </motion.li>
+                                </li>
                             ))}
                         </ul>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </motion.header>
+                    </div>
+        </header>
     );
 }
