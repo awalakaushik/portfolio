@@ -12,6 +12,7 @@
     "@astrojs/netlify": "^6.6.4",
     "@astrojs/react": "^4.4.2",
     "@astrojs/sitemap": "^3.7.3",
+    "@mlc-ai/web-llm": "^0.2.85",
     "@nanostores/react": "^1.1.0",
     "@netlify/blobs": "^10.7.13",
     "@tailwindcss/vite": "^4.2.0",

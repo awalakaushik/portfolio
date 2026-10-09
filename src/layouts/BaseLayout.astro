@@ -2,6 +2,8 @@
 import Navbar from "../components/Navbar.tsx";
 import Footer from "../components/Footer.astro";
 import AgentBridge from "../components/AgentBridge.tsx";
+import bioConfig from "../data/bio.json";
+import PortfolioVoice from "../components/PortfolioVoice.tsx";
 import { ViewTransitions } from "astro:transitions";
 import { getPortfolioData } from "../lib/portfolio-data";
 import "../styles/global.css";
@@ -193,6 +195,7 @@ const posthogHost =
     <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:text-surface-900 focus:p-4">Skip to content</a>
     <Navbar client:load transition:persist />
     <AgentBridge client:load transition:persist data={portfolioData} />
+    <PortfolioVoice client:idle transition:persist knowledge={{ config: bioConfig, portfolio: portfolioData }} />
     <main id="main-content" tabindex="-1" class="flex-1">
       <slot />
     </main>

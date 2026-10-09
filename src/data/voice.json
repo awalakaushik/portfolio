@@ -1,0 +1,6 @@
+{
+  "version": "2026-10-09",
+  "modelId": "SmolLM2-360M-Instruct-q4f32_1-MLC",
+  "modelRevision": "1e6b2ca3684e2bc8a6d39eb36e8d6cd51eb12bda",
+  "downloadNotice": "Downloads hundreds of megabytes once and uses your device’s GPU. Cached files may need downloading again if your browser clears storage."
+}
