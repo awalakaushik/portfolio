@@ -1,0 +1,60 @@
+<section class="demo-webmcp" aria-labelledby="demo-title">
+<h3 id="demo-title">Try it: One action, two entry points</h3>
+<p>This local simulator works in any browser. It does not emulate agent discovery or browser permission prompts.</p>
+<form id="filter-form"><label for="topic">Website filter</label> <select id="topic"><option>All</option><option>Angular</option><option>JavaScript</option></select> <button>Apply filter</button></form>
+<ul id="articles" aria-live="polite"></ul>
+<label for="tool-input">Tool arguments (JSON)</label>
+<textarea id="tool-input" rows="4" spellcheck="false">{ "topic": "Angular" }</textarea>
+<button id="run-tool" type="button">Run simulated tool</button>
+<button id="register-tool" type="button">Register real browser tool</button>
+<button id="reset-tool" type="button">Reset and unregister</button>
+<pre id="tool-output" aria-live="polite">Choose an input and run the tool.</pre>
+<p id="browser-support" role="status"></p>
+<script>
+(() => {
+ const root = document.querySelector('.demo-webmcp');
+ const articles = [{title:'Angular signals in practice',topic:'Angular'},{title:'Accessible Angular forms',topic:'Angular'},{title:'JavaScript module basics',topic:'JavaScript'}];
+ let lifecycle;
+ const output = root.querySelector('#tool-output');
+ const input = root.querySelector('#tool-input');
+ const select = root.querySelector('#topic');
+ const support = root.querySelector('#browser-support');
+ function validate(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Expected an object.');
+  if (Object.keys(value).some(key => key !== 'topic')) throw new Error('Only topic is supported.');
+  if (!['All','Angular','JavaScript'].includes(value.topic)) throw new Error('Choose All, Angular, or JavaScript.');
+  return value.topic;
+ }
+ function applyFilter(topic) {
+  const matches = articles.filter(article => topic === 'All' || article.topic === topic);
+  select.value = topic;
+  const list = root.querySelector('#articles');
+  list.replaceChildren(...matches.map(article => {const li=document.createElement('li');li.textContent=article.title+' — '+article.topic;return li;}));
+  return matches;
+ }
+ const tool = {
+  name:'blog_demo_filter_articles',
+  description:'Filter only the tutorial demo article list by topic and return matching titles.',
+  inputSchema:{type:'object',properties:{topic:{type:'string',enum:['All','Angular','JavaScript']}},required:['topic'],additionalProperties:false},
+  annotations:{readOnlyHint:false,untrustedContentHint:false},
+  async execute(value) {const topic=validate(value);const matches=applyFilter(topic);return {topic,count:matches.length,articles:matches};}
+ };
+ async function run(value) {try {output.textContent=JSON.stringify(await tool.execute(value),null,2);} catch(error) {output.textContent='Validation error: '+error.message;}}
+ root.querySelector('#filter-form').addEventListener('submit',event=>{event.preventDefault();void run({topic:select.value});});
+ root.querySelector('#run-tool').addEventListener('click',()=>{try {void run(JSON.parse(input.value));}catch(error){output.textContent='JSON error: '+error.message;}});
+ const register=root.querySelector('#register-tool');
+ register.addEventListener('click',async()=>{
+  if (!document.modelContext?.registerTool) {support.textContent='This browser does not expose document.modelContext.registerTool. The simulator still works.';return;}
+  register.disabled=true;
+  lifecycle?.abort();lifecycle=new AbortController();
+  try {await document.modelContext.registerTool(tool,{signal:lifecycle.signal});support.textContent='Registered blog_demo_filter_articles. Ask a compatible browser agent to filter this demo.';}
+  catch(error){lifecycle.abort();support.textContent='Registration failed: '+error.message;register.disabled=false;}
+ });
+ root.querySelector('#reset-tool').addEventListener('click',()=>{lifecycle?.abort();register.disabled=false;applyFilter('All');output.textContent='Demo reset. Tool unregistered.';support.textContent='Use the simulator or register again.';});
+ window.addEventListener('pagehide',()=>lifecycle?.abort(),{once:true});
+ document.addEventListener('astro:before-swap',()=>lifecycle?.abort(),{once:true});
+ support.textContent=document.modelContext?.registerTool?'Browser API detected; tool registration is optional.':'Browser API unavailable; use the local simulator.';
+ applyFilter('All');
+})();
+</script>
+</section>

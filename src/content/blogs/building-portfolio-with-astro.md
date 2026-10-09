@@ -1,6 +1,6 @@
 ---
 title: "Building a Modern Portfolio with Astro and Framer Motion"
-description: "A deep dive into how I built this portfolio using Astro's content collections, Tailwind CSS v4, seasonal color themes, and tasteful Framer Motion animations."
+description: "A deep dive into how I built this portfolio using Astro's content collections, Tailwind CSS v4, a consistent color system, and tasteful Framer Motion animations."
 pubDate: 2026-02-15
 tags: ["Astro", "Tailwind CSS", "Framer Motion", "Web Development"]
 draft: false
@@ -10,7 +10,7 @@ draft: false
 
 When I set out to rebuild my portfolio, I had a clear goal: **fast, content-first, and minimal JavaScript**. Astro's island architecture was the perfect fit. By shipping zero JavaScript by default, every page loads instantly — and you only hydrate the interactive bits that actually *need* to be interactive.
 
-The result? A portfolio that scores 100 on Lighthouse Performance while still having smooth animations, a dark mode toggle, and even a seasonal color palette system.
+The result? A portfolio that scores 100 on Lighthouse Performance while still having smooth animations, a dark mode toggle, and a consistent color palette.
 
 ## The Stack
 
@@ -164,176 +164,11 @@ I have four collections: **projects**, **experience**, **blogs**, and **tech-sta
 
 The beauty of this approach is that adding a new project is just creating a markdown file — no database, no CMS, no API calls.
 
-## Seasonal Color Palettes 🎨
+## A Consistent Color Palette
 
-This is probably my favorite feature. The site's color palette changes automatically based on the time of year:
+The portfolio now uses blue for primary actions, slate for surfaces, and teal for restrained accents. Light and dark modes share the same identity throughout the year.
 
-| Season | Months | Primary Colors | Accent |
-|--------|--------|----------------|--------|
-| ❄️ Winter | Dec–Feb | Indigo | Emerald |
-| 🌸 Spring | Mar–May | Teal | Rose |
-| ☀️ Summer | Jun–Aug | Amber | Cyan |
-| 🍂 Autumn | Sep–Nov | Orange | Gold |
-
-### Try it: Season Preview
-
-Click any season below to see its color palette. The gradient text and accent dot update live — this is the same CSS variable override the real site uses:
-
-<div class="demo-seasons-wrapper">
-<style>
-.demo-seasons-wrapper {
-  margin: 1.5rem 0 2rem;
-}
-.demo-season-btns {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-}
-.demo-season-btn {
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 600;
-  padding: 0.5rem 1rem;
-  border-radius: 99px;
-  border: 2px solid var(--color-surface-200);
-  background: transparent;
-  color: var(--color-surface-600);
-  transition: all 0.25s ease;
-}
-.dark .demo-season-btn {
-  border-color: var(--color-surface-700);
-  color: var(--color-surface-400);
-}
-.demo-season-btn:hover {
-  transform: scale(1.05);
-}
-.demo-season-btn:focus-visible {
-  outline: 2px solid var(--color-primary-500);
-  outline-offset: 2px;
-}
-.demo-season-preview {
-  padding: 1.5rem;
-  border-radius: 1rem;
-  border: 1px solid var(--color-surface-200);
-  background: var(--color-surface-50);
-  transition: all 0.4s ease;
-}
-.dark .demo-season-preview {
-  border-color: var(--color-surface-700);
-  background: var(--color-surface-900);
-}
-.demo-season-preview .demo-gradient-text {
-  font-size: 1.5rem;
-  font-weight: 700;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  transition: all 0.4s ease;
-}
-.demo-season-preview .demo-accent-dot {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  margin-right: 0.5rem;
-  transition: background 0.4s ease;
-}
-.demo-season-preview .demo-subtitle {
-  font-size: 0.85rem;
-  color: var(--color-surface-500);
-  margin-top: 0.25rem;
-}
-.demo-season-preview .demo-palette {
-  display: flex;
-  gap: 0.375rem;
-  margin-top: 0.75rem;
-}
-.demo-palette-swatch {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.5rem;
-  transition: background 0.4s ease;
-  border: 1px solid rgba(0,0,0,0.1);
-}
-</style>
-<div class="demo-season-btns" role="radiogroup" aria-label="Season palette selector">
-  <button class="demo-season-btn" role="radio" aria-checked="true" aria-label="Switch to Winter theme" onclick="setDemoSeason('winter')"><span aria-hidden="true">❄️</span> Winter</button>
-  <button class="demo-season-btn" role="radio" aria-checked="false" aria-label="Switch to Spring theme" onclick="setDemoSeason('spring')"><span aria-hidden="true">🌸</span> Spring</button>
-  <button class="demo-season-btn" role="radio" aria-checked="false" aria-label="Switch to Summer theme" onclick="setDemoSeason('summer')"><span aria-hidden="true">☀️</span> Summer</button>
-  <button class="demo-season-btn" role="radio" aria-checked="false" aria-label="Switch to Autumn theme" onclick="setDemoSeason('autumn')"><span aria-hidden="true">🍂</span> Autumn</button>
-</div>
-<div class="demo-season-preview" id="demo-season-card" aria-live="polite" aria-label="Season color palette preview">
-  <span class="demo-accent-dot" id="demo-dot" aria-hidden="true"></span>
-  <span class="demo-gradient-text" id="demo-text">A portfolio built with 'Astro'</span>
-  <p class="demo-subtitle" id="demo-label"><span aria-hidden="true">❄️</span> Winter — Indigo + Emerald</p>
-  <div class="demo-palette" id="demo-swatches" aria-label="Color swatches"></div>
-</div>
-<script>
-var demoSeasons = {
-  winter: { label: '❄️ Winter — Indigo + Emerald', primary: ['#eef2ff','#c7d2fe','#818cf8','#6366f1','#4f46e5','#3730a3'], accent: '#10b981', from: '#818cf8', via: '#6366f1', to: '#34d399' },
-  spring: { label: '🌸 Spring — Teal + Rose', primary: ['#f0fdfa','#99f6e4','#2dd4bf','#14b8a6','#0d9488','#115e59'], accent: '#f43f5e', from: '#2dd4bf', via: '#14b8a6', to: '#fb7185' },
-  summer: { label: '☀️ Summer — Amber + Cyan', primary: ['#fffbeb','#fde68a','#fbbf24','#f59e0b','#d97706','#92400e'], accent: '#06b6d4', from: '#fbbf24', via: '#f59e0b', to: '#22d3ee' },
-  autumn: { label: '🍂 Autumn — Orange + Gold', primary: ['#fff7ed','#fed7aa','#fb923c','#f97316','#ea580c','#9a3412'], accent: '#eab308', from: '#fb923c', via: '#f97316', to: '#facc15' }
-};
-function setDemoSeason(s) {
-  var d = demoSeasons[s];
-  document.getElementById('demo-text').style.backgroundImage = 'linear-gradient(to right, ' + d.from + ', ' + d.via + ', ' + d.to + ')';
-  document.getElementById('demo-dot').style.background = d.accent;
-  document.getElementById('demo-label').textContent = d.label;
-  // Update ARIA checked states
-  document.querySelectorAll('.demo-season-btn').forEach(function(btn) {
-    btn.setAttribute('aria-checked', btn.textContent.trim().toLowerCase().indexOf(s) !== -1 ? 'true' : 'false');
-  });
-  var sw = document.getElementById('demo-swatches');
-  sw.innerHTML = '';
-  d.primary.forEach(function(c) {
-    var el = document.createElement('div');
-    el.className = 'demo-palette-swatch';
-    el.style.background = c;
-    sw.appendChild(el);
-  });
-  var acEl = document.createElement('div');
-  acEl.className = 'demo-palette-swatch';
-  acEl.style.background = d.accent;
-  acEl.setAttribute('aria-label', 'Accent color');
-  sw.appendChild(acEl);
-}
-setDemoSeason('winter');
-</script>
-</div>
-
-### How It Works
-
-The implementation is surprisingly simple. Tailwind CSS v4's `@theme` directive defines CSS custom properties:
-
-```css
-@theme {
-  --color-primary-500: #6366f1; /* Winter indigo */
-  --color-accent-500: #10b981;  /* Winter emerald */
-}
-```
-
-Then each season overrides these tokens via a `data-season` attribute on `<html>`:
-
-```css
-html[data-season="spring"] {
-  --color-primary-500: #14b8a6; /* Teal */
-  --color-accent-500: #f43f5e;  /* Rose */
-}
-```
-
-An inline script in `<head>` detects the current month *before the page paints*, so there's no flash of wrong colors:
-
-```javascript
-var seasons = ['winter','winter','spring','spring','spring',
-               'summer','summer','summer','autumn','autumn',
-               'autumn','winter'];
-var season = localStorage.getItem('season') || seasons[new Date().getMonth()];
-document.documentElement.setAttribute('data-season', season);
-```
-
-Visitors can also manually cycle through seasons using the emoji toggle (🌸 ☀️ 🍂 ❄️) in the navbar, and their preference persists in `localStorage`.
+The original version experimented with seasonal palettes. I replaced them with a consistent theme so project content stays central and visitors see a familiar interface on every visit.
 
 ## The Design System
 
@@ -343,7 +178,7 @@ Every visual element is built on three utility classes:
 - **`.glass-card`** — Frosted glass cards with backdrop blur and subtle borders
 - **`.section-padding`** — Responsive section spacing that scales with screen size
 
-These, combined with a consistent color token system (`primary-*`, `surface-*`, `accent-*`), mean I never write raw hex values. Everything adapts automatically when the season or theme changes.
+These, combined with a consistent color token system (`primary-*`, `surface-*`, `accent-*`), mean I never write raw hex values. Everything adapts automatically between light and dark modes.
 
 ## Animations Done Right
 
@@ -662,6 +497,6 @@ The whole pipeline runs in under 30 seconds. The site is live at [awalakaushik.d
 
 Building with Astro taught me to think critically about what actually *needs* JavaScript. The answer? Far less than you'd think. A navbar with a mobile menu and dark mode toggle — yes. A footer with social links — no. A project card with hover animations — yes. A section heading — absolutely not.
 
-This mindset shift — defaulting to static and opting into interactivity — is what makes Astro so powerful. And with Tailwind v4's CSS-first approach and seasonal theming, the site feels alive and personal without sacrificing performance.
+This mindset shift — defaulting to static and opting into interactivity — is what makes Astro so powerful. And with Tailwind v4's CSS-first approach and consistent theming, the site feels alive and personal without sacrificing performance.
 
 If you're thinking about building your own portfolio, here's my advice: **start with content, not code**. Define your data structures first (schemas, markdown files), then build the UI around them. It's faster, it's more maintainable, and it forces you to think about what actually matters.

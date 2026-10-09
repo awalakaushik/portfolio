@@ -53,7 +53,7 @@ const posthogHost =
 
     <ViewTransitions />
 
-    <!-- Inline dark-mode + season init to prevent FOUC -->
+    <!-- Inline theme init to prevent FOUC -->
     <script is:inline>
       // Dark mode
       if (
@@ -66,24 +66,7 @@ const posthogHost =
         document.documentElement.classList.remove("dark");
       }
 
-      // Seasonal palette
-      var seasons = [
-        "winter",
-        "winter",
-        "spring",
-        "spring",
-        "spring",
-        "summer",
-        "summer",
-        "summer",
-        "autumn",
-        "autumn",
-        "autumn",
-        "winter",
-      ];
-      document.documentElement.setAttribute("data-season", seasons[new Date().getMonth()]);
-
-      // Preserve theme across View Transitions; re-compute season from current month
+      // Preserve theme across View Transitions
       document.addEventListener("astro:before-swap", function (e) {
         var isDark = document.documentElement.classList.contains("dark");
         if (isDark) {
@@ -91,7 +74,6 @@ const posthogHost =
         } else {
           e.newDocument.documentElement.classList.remove("dark");
         }
-        e.newDocument.documentElement.setAttribute("data-season", seasons[new Date().getMonth()]);
       });
     </script>
 
@@ -165,7 +147,6 @@ const posthogHost =
         document.addEventListener("astro:after-swap", function () {
           posthog.capture("$pageview", {
             $current_url: window.location.href,
-            season: document.documentElement.getAttribute("data-season"),
             theme: document.documentElement.classList.contains("dark")
               ? "dark"
               : "light",
@@ -175,9 +156,10 @@ const posthogHost =
     </script>
   </head>
   <body class="min-h-screen flex flex-col">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:text-surface-900 focus:p-4">Skip to content</a>
     <Navbar client:load transition:persist />
     <AgentBridge client:load transition:persist data={portfolioData} />
-    <main class="flex-1">
+    <main id="main-content" class="flex-1">
       <slot />
     </main>
     <Footer />
