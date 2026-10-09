@@ -1,4 +1,3 @@
-import { motion, useReducedMotion } from 'framer-motion';
 
 interface ProjectCardProps {
     title: string;
@@ -23,12 +22,10 @@ export default function ProjectCard({
     achievements = [],
     company,
 }: ProjectCardProps) {
-    const reduceMotion = useReducedMotion();
 
     return (
-        <motion.article
-            whileHover={reduceMotion ? undefined : { y: -6, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
-            className="group relative flex flex-col overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900/50 transition-shadow duration-300 hover:shadow-2xl hover:shadow-primary-500/10 dark:hover:shadow-primary-500/5"
+        <article
+            className="project-surface group relative flex flex-col overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900/50"
         >
             {/* Image */}
             {image && (
@@ -39,7 +36,7 @@ export default function ProjectCard({
                         loading="lazy"
                         width={800}
                         height={450}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="project-image h-full w-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-surface-900/20 to-transparent" />
 
@@ -116,6 +113,6 @@ export default function ProjectCard({
 
             {/* Hover glow effect */}
             <div className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-primary-500/5 via-transparent to-accent-500/5" />
-        </motion.article>
+        </article>
     );
 }

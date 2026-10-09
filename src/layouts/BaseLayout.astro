@@ -84,6 +84,10 @@ const posthogHost =
     <!-- Inline theme init to prevent FOUC -->
     <script is:inline>
       // Dark mode
+      var motionPreference = "on";
+      try { motionPreference = localStorage.getItem("portfolio-motion") || "on"; } catch {}
+      document.documentElement.dataset.motionPreference = motionPreference;
+      document.documentElement.dataset.motion = motionPreference === "off" || window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "off" : "on";
       if (
         localStorage.getItem("theme") === "dark" ||
         (!localStorage.getItem("theme") &&
@@ -97,6 +101,8 @@ const posthogHost =
       // Preserve theme across View Transitions
       document.addEventListener("astro:before-swap", function (e) {
         var isDark = document.documentElement.classList.contains("dark");
+        e.newDocument.documentElement.dataset.motion = document.documentElement.dataset.motion;
+        e.newDocument.documentElement.dataset.motionPreference = document.documentElement.dataset.motionPreference;
         if (isDark) {
           e.newDocument.documentElement.classList.add("dark");
         } else {
@@ -187,7 +193,7 @@ const posthogHost =
     <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:text-surface-900 focus:p-4">Skip to content</a>
     <Navbar client:load transition:persist />
     <AgentBridge client:load transition:persist data={portfolioData} />
-    <main id="main-content" class="flex-1">
+    <main id="main-content" tabindex="-1" class="flex-1">
       <slot />
     </main>
     <Footer />

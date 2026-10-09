@@ -75,7 +75,7 @@ export default function AgentTrafficDashboard() {
         return <p className="text-sm text-surface-500 dark:text-surface-400">Analytics are unavailable right now.</p>;
     }
     if (!stats) {
-        return <p className="text-sm text-surface-500 dark:text-surface-400 animate-pulse">Loading live agent analytics…</p>;
+        return <p role="status" className="text-sm text-surface-500 dark:text-surface-400">Loading live agent analytics…</p>;
     }
 
     const tools = Object.entries(stats.toolCounts).sort((a, b) => b[1].count - a[1].count);

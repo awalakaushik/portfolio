@@ -1,5 +1,5 @@
-import { motion, useInView, useReducedMotion } from 'framer-motion';
 import { useRef } from 'react';
+import { useScrollReveal } from '../lib/use-scroll-reveal';
 
 interface TimelineItemProps {
     company: string;
@@ -19,15 +19,12 @@ export default function TimelineItem({
     index,
 }: TimelineItemProps) {
     const ref = useRef<HTMLDivElement>(null);
-    const reducedMotion = useReducedMotion();
-    const isInView = useInView(ref, { once: true, margin: '-100px' });
+    useScrollReveal(ref);
 
     return (
-        <motion.div
+        <div
             ref={ref}
-            initial={false}
-            animate={{ opacity: 1, x: 0, y: isInView || reducedMotion ? 0 : 8 }}
-            transition={{ duration: reducedMotion ? 0 : 0.6, delay: reducedMotion ? 0 : 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
+            data-scroll-reveal
             className="relative pl-8 md:pl-12 pb-12 last:pb-0 group"
         >
             {/* Timeline line */}
@@ -53,6 +50,6 @@ export default function TimelineItem({
                     {description}
                 </p>
             </div>
-        </motion.div>
+        </div>
     );
 }

@@ -5,7 +5,6 @@ import TypewriterText from "../components/TypewriterText.tsx";
 import ProjectCard from "../components/ProjectCard.tsx";
 import SectionHeading from "../components/SectionHeading.astro";
 import { getCollection } from "astro:content";
-import EngineeringCore from "../components/EngineeringCore.tsx";
 
 // Fetch content
 const allProjects = await getCollection("projects");
@@ -38,15 +37,15 @@ const categories = [...new Set(techStack.map((t) => t.data.category))];
       </div>
     </div>
 
-    <div class="relative max-w-6xl mx-auto w-full hero-grid">
-      <FadeIn client:visible className="hero-copy">
+    <div class="relative max-w-6xl mx-auto w-full">
+      <FadeIn client:load className="hero-copy">
         <div class="flex flex-col gap-6">
           <!-- Tag -->
           <a
             href="/contact"
             class="inline-flex items-center gap-2 w-fit rounded-full border border-surface-200 dark:border-surface-800 bg-white/50 dark:bg-surface-900/50 backdrop-blur-sm px-4 py-1.5 hover:bg-surface-50 dark:hover:bg-surface-900 transition-colors"
           >
-            <span class="w-2 h-2 rounded-full bg-accent-500 animate-pulse"
+            <span class="w-2 h-2 rounded-full bg-accent-600"
             ></span>
             <span
               data-tailor="headline"
@@ -58,7 +57,7 @@ const categories = [...new Set(techStack.map((t) => t.data.category))];
           <p class="font-mono text-xs uppercase tracking-widest text-primary-700 dark:text-primary-300">Frontend architecture · Full-stack systems · Agent-ready interfaces</p>
           <!-- Heading -->
           <h1
-            class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1]"
+            class="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] max-w-5xl"
           >
             <span class="text-surface-900 dark:text-white">Hi, I'm</span>
             <br />
@@ -129,7 +128,6 @@ const categories = [...new Set(techStack.map((t) => t.data.category))];
           </nav>
         </div>
       </FadeIn>
-      <EngineeringCore client:load />
     </div>
 
     <!-- Scroll indicator -->
@@ -138,7 +136,7 @@ const categories = [...new Set(techStack.map((t) => t.data.category))];
         class="w-5 h-8 rounded-full border-2 border-surface-300 dark:border-surface-700 flex items-start justify-center p-1"
       >
         <div
-          class="w-1 h-2 rounded-full bg-surface-400 dark:bg-surface-600 animate-bounce"
+          class="w-1 h-2 rounded-full bg-surface-400 dark:bg-surface-600"
         >
         </div>
       </div>

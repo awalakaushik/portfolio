@@ -10,6 +10,9 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://awalakaushik.dev',
   integrations: [react(), sitemap()],
+  markdown: {
+    shikiConfig: { theme: 'github-dark-high-contrast' }
+  },
 
   vite: {
     plugins: [tailwindcss()]
