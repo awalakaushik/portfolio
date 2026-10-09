@@ -13,26 +13,12 @@ export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
     const [isDark, setIsDark] = useState(true);
     const [scrolled, setScrolled] = useState(false);
-    const [season, setSeason] = useState('winter');
     const [currentPath, setCurrentPath] = useState('/');
-
-    const seasonEmojis: Record<string, string> = {
-        spring: '🌸',
-        summer: '☀️',
-        autumn: '🍂',
-        winter: '❄️',
-    };
-
-    const seasonOrder = ['spring', 'summer', 'autumn', 'winter'];
 
     useEffect(() => {
         const stored = localStorage.getItem('theme');
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         setIsDark(stored ? stored === 'dark' : prefersDark);
-
-        // Read current season from DOM (set by inline script)
-        const currentSeason = document.documentElement.getAttribute('data-season') || 'winter';
-        setSeason(currentSeason);
 
         // Detect current page
         setCurrentPath(window.location.pathname);
@@ -58,13 +44,6 @@ export default function Navbar() {
         setIsDark(next);
         document.documentElement.classList.toggle('dark', next);
         localStorage.setItem('theme', next ? 'dark' : 'light');
-    };
-
-    const cycleSeason = () => {
-        const currentIndex = seasonOrder.indexOf(season);
-        const next = seasonOrder[(currentIndex + 1) % seasonOrder.length];
-        setSeason(next);
-        document.documentElement.setAttribute('data-season', next);
     };
 
     const isActive = (href: string) => {
@@ -111,18 +90,6 @@ export default function Navbar() {
 
                 {/* Right controls */}
                 <div className="flex items-center gap-1">
-                    {/* Season Toggle — dev mode only */}
-                    {import.meta.env.DEV && (
-                    <button
-                        onClick={cycleSeason}
-                        aria-label={`Current season: ${season}. Click to change.`}
-                        title={`${season.charAt(0).toUpperCase() + season.slice(1)} theme`}
-                        className="p-2 rounded-xl text-surface-500 hover:text-surface-900 dark:hover:text-white hover:bg-surface-100 dark:hover:bg-surface-800/50 transition-all text-base"
-                    >
-                        {seasonEmojis[season]}
-                    </button>
-                    )}
-
                     {/* Theme Toggle */}
                     <button
                         onClick={toggleTheme}

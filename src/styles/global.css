@@ -5,16 +5,16 @@
 
 /* ===== Tailwind v4 Theme ===== */
 @theme {
-    --color-primary-50: #eef2ff;
-    --color-primary-100: #e0e7ff;
-    --color-primary-200: #c7d2fe;
-    --color-primary-300: #a5b4fc;
-    --color-primary-400: #818cf8;
-    --color-primary-500: #6366f1;
-    --color-primary-600: #4f46e5;
-    --color-primary-700: #4338ca;
-    --color-primary-800: #3730a3;
-    --color-primary-900: #312e81;
+    --color-primary-50: #eff6ff;
+    --color-primary-100: #dbeafe;
+    --color-primary-200: #bfdbfe;
+    --color-primary-300: #93c5fd;
+    --color-primary-400: #60a5fa;
+    --color-primary-500: #3b82f6;
+    --color-primary-600: #2563eb;
+    --color-primary-700: #1d4ed8;
+    --color-primary-800: #1e40af;
+    --color-primary-900: #1e3a8a;
 
     --color-surface-50: #f8fafc;
     --color-surface-100: #f1f5f9;
@@ -28,9 +28,9 @@
     --color-surface-900: #0f172a;
     --color-surface-950: #020617;
 
-    --color-accent-400: #34d399;
-    --color-accent-500: #10b981;
-    --color-accent-600: #059669;
+    --color-accent-400: #2dd4bf;
+    --color-accent-500: #14b8a6;
+    --color-accent-600: #0d9488;
 
     --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, monospace;
@@ -81,11 +81,11 @@
 /* ===== Utility Classes ===== */
 @layer utilities {
     .text-gradient {
-        @apply bg-clip-text text-transparent bg-linear-to-r from-primary-400 via-primary-500 to-accent-400;
+        @apply bg-clip-text text-transparent bg-linear-to-r from-primary-700 to-accent-600;
     }
 
     .glass-card {
-        @apply bg-white/60 dark:bg-surface-900/60 backdrop-blur-xl border border-surface-200/50 dark:border-surface-700/50 rounded-2xl;
+        @apply bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-2xl;
     }
 
     .section-padding {
@@ -356,63 +356,12 @@
     border-top-color: var(--color-surface-800);
 }
 
-/* =============================================
-   SEASONAL COLOR PALETTES
-   Detected automatically based on the current month.
-   Override by setting data-season="spring|summer|autumn|winter"
-   on the <html> element.
-   ============================================= */
 
-/* --- Spring (Mar – May): Teal + Rose --- */
-html[data-season="spring"] {
-    --color-primary-50: #f0fdfa;
-    --color-primary-100: #ccfbf1;
-    --color-primary-200: #99f6e4;
-    --color-primary-300: #5eead4;
-    --color-primary-400: #2dd4bf;
-    --color-primary-500: #14b8a6;
-    --color-primary-600: #0d9488;
-    --color-primary-700: #0f766e;
-    --color-primary-800: #115e59;
-    --color-primary-900: #134e4a;
-    --color-accent-400: #fb7185;
-    --color-accent-500: #f43f5e;
-    --color-accent-600: #e11d48;
+.dark .text-gradient {
+    @apply from-primary-300 to-accent-400;
 }
-
-/* --- Summer (Jun – Aug): Amber + Cyan --- */
-html[data-season="summer"] {
-    --color-primary-50: #fffbeb;
-    --color-primary-100: #fef3c7;
-    --color-primary-200: #fde68a;
-    --color-primary-300: #fcd34d;
-    --color-primary-400: #fbbf24;
-    --color-primary-500: #f59e0b;
-    --color-primary-600: #d97706;
-    --color-primary-700: #b45309;
-    --color-primary-800: #92400e;
-    --color-primary-900: #78350f;
-    --color-accent-400: #22d3ee;
-    --color-accent-500: #06b6d4;
-    --color-accent-600: #0891b2;
+:focus-visible { outline: 0.125rem solid var(--color-primary-500); outline-offset: 0.25rem; }
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
-
-/* --- Autumn (Sep – Nov): Orange + Gold --- */
-html[data-season="autumn"] {
-    --color-primary-50: #fff7ed;
-    --color-primary-100: #ffedd5;
-    --color-primary-200: #fed7aa;
-    --color-primary-300: #fdba74;
-    --color-primary-400: #fb923c;
-    --color-primary-500: #f97316;
-    --color-primary-600: #ea580c;
-    --color-primary-700: #c2410c;
-    --color-primary-800: #9a3412;
-    --color-primary-900: #7c2d12;
-    --color-accent-400: #facc15;
-    --color-accent-500: #eab308;
-    --color-accent-600: #ca8a04;
-}
-
-/* --- Winter (Dec – Feb): Indigo + Emerald (default) --- */
-/* Winter uses the base @theme values — no overrides needed */

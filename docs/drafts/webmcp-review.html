@@ -1,0 +1,268 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Add WebMCP to Your Website — Review Draft</title><style>
+:root{--color-primary-600:#2563eb;--color-surface-900:#0f172a;--color-surface-100:#f1f5f9;--color-surface-300:#cbd5e1;color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#f8fafc;color:var(--color-surface-900);font:1.0625rem/1.8 system-ui}main{max-width:54rem;margin:auto;padding:3rem 1.5rem}h1,h2,h3{line-height:1.2;letter-spacing:-.025em}h1{font-size:2.5rem}h2{margin-top:3rem}a{color:#1d4ed8}pre{background:var(--color-surface-900);color:var(--color-surface-100);padding:1.25rem;border-radius:.75rem;overflow:auto;font-size:.875rem}code{font-family:ui-monospace,monospace}table{display:block;overflow:auto;border-collapse:collapse}td,th{padding:.75rem;border:1px solid var(--color-surface-300);text-align:left}.demo-webmcp{padding:1.5rem;background:white;border:1px solid var(--color-surface-300);border-radius:1rem}.demo-webmcp textarea{display:block;width:100%;margin:.75rem 0;padding:.75rem;font:1rem/1.5 monospace}.demo-webmcp button,.demo-webmcp select{font:inherit;padding:.5rem .75rem;margin:.25rem 0;border:1px solid var(--color-surface-300);border-radius:.5rem;background:var(--color-surface-100);color:var(--color-surface-900)}.demo-webmcp button{cursor:pointer}button:disabled{opacity:.6} :focus-visible{outline:3px solid var(--color-primary-600);outline-offset:3px}@media(max-width:35rem){h1{font-size:2rem}main{padding:2rem 1rem}}@media(prefers-color-scheme:dark){:root{color-scheme:dark}body{background:#0f172a;color:#e2e8f0}a{color:#93c5fd}.demo-webmcp{background:#1e293b;border-color:#475569}.demo-webmcp button,.demo-webmcp select{background:#334155;color:#f1f5f9;border-color:#64748b}.demo-webmcp textarea{background:#0f172a;color:#f1f5f9}td,th{border-color:#475569}}
+</style></head><body><main><article><h1>Add WebMCP to Your Website</h1>
+<p><strong>Review draft · October 9, 2026 · Not published</strong></p>
+<p>Description: Give browser agents structured access to your website’s actions, with a practical JavaScript example and Angular integration.
+Tags: WebMCP, JavaScript, Angular, Accessibility</p>
+<h2>Give agents a clear way to use your app</h2>
+<p>Imagine a reader asking an assistant to show beginner Angular articles. Your website already knows how to filter its articles. WebMCP lets you expose that action as a named tool with structured inputs.</p>
+<p>The browser agent can request <code>filter_articles</code> with <code>{ "topic": "Angular" }</code>. Your application validates the input, applies its normal filter, and returns the matching titles. The reader sees the same updated list.</p>
+<p>WebMCP runs in the page and shares its browser context. A remote MCP server needs a separate integration. Registering page tools does not automatically connect every agent SDK to your website.</p>
+<p>The API remains a draft community proposal, rather than a W3C standard. Browser and agent support varies. Check your target environment and feature-detect the API. This article targets the imperative <code>document.modelContext.registerTool</code> interface reviewed on October 9, 2026.</p>
+<h2>Start with one useful action</h2>
+<p>Choose a small action that your website already supports. Search a catalog, filter articles, select a dashboard range, or prepare a booking.</p>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Tool name</th>
+<th>What completion means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Read articles</td>
+<td><code>list_articles</code></td>
+<td>Return article data</td>
+</tr>
+<tr>
+<td>Change the visible filter</td>
+<td><code>filter_articles</code></td>
+<td>Update the list and return matches</td>
+</tr>
+<tr>
+<td>Prepare a booking</td>
+<td><code>prepare_booking</code></td>
+<td>Stage details without buying anything</td>
+</tr>
+<tr>
+<td>Confirm a booking</td>
+<td><code>confirm_booking</code></td>
+<td>Complete the authorized transaction</td>
+</tr>
+</tbody>
+</table>
+<p>A filter changes page state, so it should not claim <code>readOnlyHint: true</code>. Annotations describe behavior; they do not grant permissions.</p>
+<h2>Try it: Run a tool locally</h2>
+<p>Open the accompanying HTML review draft. Change the JSON input and run the tool. Try <code>Angular</code>, <code>JavaScript</code>, an unsupported topic, and malformed JSON. Notice how validation errors preserve the current list.</p>
+<p>The demo calls the exact same handler from a form and from its simulated tool runner. The simulator works without WebMCP. A separate button registers the tool with the real browser API when available. Registration proves only API availability; an external compatible agent must still discover and call it.</p>
+<section class="demo-webmcp" aria-labelledby="demo-title">
+<h3 id="demo-title">Try it: One action, two entry points</h3>
+<p>This local simulator works in any browser. It does not emulate agent discovery or browser permission prompts.</p>
+<form id="filter-form"><label for="topic">Website filter</label> <select id="topic"><option>All</option><option>Angular</option><option>JavaScript</option></select> <button>Apply filter</button></form>
+<ul id="articles" aria-live="polite"></ul>
+<label for="tool-input">Tool arguments (JSON)</label>
+<textarea id="tool-input" rows="4" spellcheck="false">{ "topic": "Angular" }</textarea>
+<button id="run-tool" type="button">Run simulated tool</button>
+<button id="register-tool" type="button">Register real browser tool</button>
+<button id="reset-tool" type="button">Reset and unregister</button>
+<pre id="tool-output" aria-live="polite">Choose an input and run the tool.</pre>
+<p id="browser-support" role="status"></p>
+<script>
+(() => {
+ const root = document.querySelector('.demo-webmcp');
+ const articles = [{title:'Angular signals in practice',topic:'Angular'},{title:'Accessible Angular forms',topic:'Angular'},{title:'JavaScript module basics',topic:'JavaScript'}];
+ let lifecycle;
+ const output = root.querySelector('#tool-output');
+ const input = root.querySelector('#tool-input');
+ const select = root.querySelector('#topic');
+ const support = root.querySelector('#browser-support');
+ function validate(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Expected an object.');
+  if (Object.keys(value).some(key => key !== 'topic')) throw new Error('Only topic is supported.');
+  if (!['All','Angular','JavaScript'].includes(value.topic)) throw new Error('Choose All, Angular, or JavaScript.');
+  return value.topic;
+ }
+ function applyFilter(topic) {
+  const matches = articles.filter(article => topic === 'All' || article.topic === topic);
+  select.value = topic;
+  const list = root.querySelector('#articles');
+  list.replaceChildren(...matches.map(article => {const li=document.createElement('li');li.textContent=article.title+' — '+article.topic;return li;}));
+  return matches;
+ }
+ const tool = {
+  name:'blog_demo_filter_articles',
+  description:'Filter only the tutorial demo article list by topic and return matching titles.',
+  inputSchema:{type:'object',properties:{topic:{type:'string',enum:['All','Angular','JavaScript']}},required:['topic'],additionalProperties:false},
+  annotations:{readOnlyHint:false,untrustedContentHint:false},
+  async execute(value) {const topic=validate(value);const matches=applyFilter(topic);return {topic,count:matches.length,articles:matches};}
+ };
+ async function run(value) {try {output.textContent=JSON.stringify(await tool.execute(value),null,2);} catch(error) {output.textContent='Validation error: '+error.message;}}
+ root.querySelector('#filter-form').addEventListener('submit',event=>{event.preventDefault();void run({topic:select.value});});
+ root.querySelector('#run-tool').addEventListener('click',()=>{try {void run(JSON.parse(input.value));}catch(error){output.textContent='JSON error: '+error.message;}});
+ const register=root.querySelector('#register-tool');
+ register.addEventListener('click',async()=>{
+  if (!document.modelContext?.registerTool) {support.textContent='This browser does not expose document.modelContext.registerTool. The simulator still works.';return;}
+  register.disabled=true;
+  lifecycle?.abort();lifecycle=new AbortController();
+  try {await document.modelContext.registerTool(tool,{signal:lifecycle.signal});support.textContent='Registered blog_demo_filter_articles. Ask a compatible browser agent to filter this demo.';}
+  catch(error){lifecycle.abort();support.textContent='Registration failed: '+error.message;register.disabled=false;}
+ });
+ root.querySelector('#reset-tool').addEventListener('click',()=>{lifecycle?.abort();register.disabled=false;applyFilter('All');output.textContent='Demo reset. Tool unregistered.';support.textContent='Use the simulator or register again.';});
+ window.addEventListener('pagehide',()=>lifecycle?.abort(),{once:true});
+ document.addEventListener('astro:before-swap',()=>lifecycle?.abort(),{once:true});
+ support.textContent=document.modelContext?.registerTool?'Browser API detected; tool registration is optional.':'Browser API unavailable; use the local simulator.';
+ applyFilter('All');
+})();
+</script>
+</section>
+<h2>Build the tool around your application action</h2>
+<p>Keep business logic outside the adapter. The following plain JavaScript module accepts your existing <code>applyFilter</code> action. That action must update the visible list before resolving and return JSON-serializable article summaries.</p>
+<pre><code class="language-javascript">export function validateFilter(input) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    throw new Error('Expected an object.');
+  }
+  if (Object.keys(input).some(key => key !== 'topic')) {
+    throw new Error('Only topic is supported.');
+  }
+  if (!['All', 'Angular', 'JavaScript'].includes(input.topic)) {
+    throw new Error('Choose All, Angular, or JavaScript.');
+  }
+  return input.topic;
+}
+
+export function createFilterTool(applyFilter) {
+  return {
+    name: 'filter_articles',
+    description: 'Filter the visible article list by topic and return matching titles.',
+    inputSchema: {
+      type: 'object',
+      properties: { topic: { type: 'string', enum: ['All', 'Angular', 'JavaScript'] } },
+      required: ['topic'],
+      additionalProperties: false,
+    },
+    annotations: { readOnlyHint: false, untrustedContentHint: false },
+    async execute(input) {
+      const topic = validateFilter(input);
+      const articles = await applyFilter(topic);
+      return { topic, count: articles.length, articles };
+    },
+  };
+}
+
+export async function registerArticleTool(applyFilter) {
+  if (typeof document === 'undefined' || !document.modelContext?.registerTool) {
+    return { supported: false, cleanup() {} };
+  }
+  const lifecycle = new AbortController();
+  try {
+    await document.modelContext.registerTool(
+      createFilterTool(applyFilter),
+      { signal: lifecycle.signal },
+    );
+    return { supported: true, cleanup: () => lifecycle.abort() };
+  } catch (error) {
+    lifecycle.abort();
+    throw error;
+  }
+}
+</code></pre>
+<p>Call registration once after the client interface initializes. Retain its cleanup function and call it when the owning view disappears. Handle rejection without breaking the normal UI. In a single-page app, scope route-specific tools to the route lifecycle. Do not register another copy after every render.</p>
+<p>The JSON schema helps an agent select inputs. Your runtime validator still checks them. For a large application, use your established validation library and keep its schema aligned with the advertised input schema.</p>
+<h2>Add Angular support</h2>
+<p>For a modern Angular application, use dependency injection, a shared facade, and browser-only render hooks. This adapter belongs beside the feature's data-access or integration layer. Components should keep using the same facade.</p>
+<p>The sample assumes Angular 20+ for stable <code>afterNextRender</code>. It uses a small local interface rather than depending on a specific third-party WebMCP type package.</p>
+<pre><code class="language-typescript">import { DOCUMENT } from '@angular/common';
+import {
+  afterNextRender, ApplicationRef, DestroyRef, Injectable, inject,
+} from '@angular/core';
+import { ArticlesFacade } from './articles.facade';
+
+type Topic = 'All' | 'Angular' | 'JavaScript';
+interface ModelContext {
+  registerTool(tool: {
+    name: string;
+    description: string;
+    inputSchema: object;
+    annotations: { readOnlyHint: boolean };
+    execute(input: unknown): Promise&#x3C;unknown>;
+  }, options: { signal: AbortSignal }): void | Promise&#x3C;void>;
+}
+
+function readTopic(input: unknown): Topic {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    throw new Error('Expected an object.');
+  }
+  const record = input as Record&#x3C;string, unknown>;
+  if (Object.keys(record).some(key => key !== 'topic')) {
+    throw new Error('Only topic is supported.');
+  }
+  const topic = record['topic'];
+  if (topic === 'All' || topic === 'Angular' || topic === 'JavaScript') return topic;
+  throw new Error('Choose All, Angular, or JavaScript.');
+}
+
+@Injectable() // Provide once in the owning feature component.
+export class ArticlesAgentBridge {
+  private readonly doc = inject(DOCUMENT);
+  private readonly facade = inject(ArticlesFacade);
+  private readonly app = inject(ApplicationRef);
+  private readonly destroy = inject(DestroyRef);
+  private readonly lifecycle = new AbortController();
+
+  constructor() {
+    this.destroy.onDestroy(() => this.lifecycle.abort());
+    afterNextRender(() => { void this.register(); });
+  }
+
+  private async register(): Promise&#x3C;void> {
+    const context = (this.doc as Document &#x26; { modelContext?: ModelContext }).modelContext;
+    if (!context?.registerTool || this.lifecycle.signal.aborted) return;
+    try {
+      await context.registerTool({
+        name: 'filter_articles',
+        description: 'Filter the visible article list by topic and return matching titles.',
+        inputSchema: {
+          type: 'object',
+          properties: { topic: { type: 'string', enum: ['All', 'Angular', 'JavaScript'] } },
+          required: ['topic'], additionalProperties: false,
+        },
+        annotations: { readOnlyHint: false },
+        execute: async (input: unknown) => {
+          if (this.lifecycle.signal.aborted) throw new Error('Feature closed.');
+          const topic = readTopic(input);
+          // Contract: await backend/store completion; return safe article summaries.
+          const articles = await this.facade.filterByTopic(topic);
+          await this.app.whenStable();
+          return { topic, count: articles.length, articles };
+        },
+      }, { signal: this.lifecycle.signal });
+    } catch (error) {
+      this.lifecycle.abort();
+      console.error('Article tool registration failed', error);
+    }
+  }
+}
+</code></pre>
+<p>Add <code>providers: [ArticlesAgentBridge]</code> to the standalone feature component and instantiate it with <code>private readonly agentBridge = inject(ArticlesAgentBridge)</code>. Merely listing a provider does not instantiate it.</p>
+<p><code>ArticlesFacade</code> remains application-specific. Implement <code>filterByTopic(topic): Promise&#x3C;Array&#x3C;{ title: string; topic: string }>></code> using your existing action and completion flow. With NgRx, dispatch an action and await its matching success or failure, using a request identifier. Do not return immediately after dispatch. Signals can update the UI directly; <code>whenStable()</code> waits for Angular stability after your action finishes. Long-running pending work can delay that promise, so verify this choice against your app's rendering and pending-task behavior.</p>
+<p>Keep global tools in an application-wide adapter. Keep feature tools in a feature-scoped provider. After a route exits, abort registration and ensure pending operations respect route destruction. For cancellable requests, pass an operation signal into your facade; registration cleanup alone does not cancel all business work.</p>
+<p>Angular's current documentation also lists experimental WebMCP helpers. Verify their availability and browser compatibility against your installed Angular version before adopting them. The adapter above teaches the underlying browser integration and avoids tying the article to those evolving helpers.</p>
+<h2>Keep permissions in your application</h2>
+<p>Reuse normal authentication and authorization. The backend must reject unauthorized operations even if an agent supplies plausible inputs. Do not expose secrets, access tokens, or unrestricted account data in results.</p>
+<p>For purchases, publishing, or destructive operations, stage the request and show the user its concrete effect. Complete it only through your application's confirmation flow. A browser approval prompt or an annotation cannot replace that flow.</p>
+<p>Treat tool results containing user-generated text as untrusted content. Keep descriptions factual. Bound input lengths and result sizes, and prevent repeated calls from creating duplicate writes through your existing idempotency controls.</p>
+<h2>Verify the integration</h2>
+<p>Test the handler first, then registration, then the full browser-agent interaction:</p>
+<ul>
+<li>Valid input updates the same list as the normal form.</li>
+<li>Invalid input returns a useful error without changing state.</li>
+<li>Missing browser support leaves the website fully usable.</li>
+<li>Registration failure leaves the normal UI working.</li>
+<li>Route exit removes the tool; re-entry registers one fresh instance.</li>
+<li>Async actions return after completion and visible state settles.</li>
+<li>Backend permission checks reject unauthorized changes.</li>
+<li>Keyboard users can operate the ordinary UI and demo controls.</li>
+</ul>
+<p>A mock registry tests your adapter. It does not establish real browser support. Use a compatible browser and agent to verify discovery and execution before claiming an end-to-end integration.</p>
+<h2>What to build next</h2>
+<p>Expose one useful action, observe how agents use it, and improve its inputs and results. Add more tools only when each completes a clear task. The same approach works for a static content site, an Angular dashboard, or a full-stack product.</p>
+<h2>References</h2>
+<ul>
+<li><a href="https://webmachinelearning.github.io/webmcp/">WebMCP draft and API</a></li>
+<li><a href="https://github.com/webmachinelearning/webmcp">WebMCP source and implementation discussion</a></li>
+<li><a href="https://angular.dev/api/core/afterNextRender">Angular afterNextRender</a></li>
+<li><a href="https://angular.dev/api/core/DestroyRef">Angular DestroyRef</a></li>
+<li><a href="https://angular.dev/api/core/ApplicationRef">Angular ApplicationRef</a></li>
+</ul>
+<p>Editorial note: Recheck API signatures, browser support, and Angular versions immediately before publishing. This draft stays outside the public content collection until review.</p></article></main></body></html>
